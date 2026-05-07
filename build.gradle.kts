@@ -1,0 +1,136 @@
+plugins {
+    java
+    id("org.springframework.boot") version "3.5.5"
+    id("io.spring.dependency-management") version "1.1.7"
+    `maven-publish`
+    checkstyle
+}
+
+
+configure<PublishingExtension> {
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackagesSecurity"
+            url = uri("https://maven.pkg.github.com/rikser123/rikser-security")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+group = "rikser123"
+description = "Yandex fetcher"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    // Добавляем Alibaba mirror как запасной вариант
+    maven {
+        name = "GitHubPackagesBundle"
+        url = uri("https://maven.pkg.github.com/rikser123/rikser-bundle")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("PAT_TOKEN")
+        }
+    }
+}
+
+sourceSets {
+    create("integrationTest") {
+        java {
+            srcDir("src/integrationTest/java")
+            compileClasspath += sourceSets.main.get().output
+            runtimeClasspath += sourceSets.main.get().output
+        }
+        resources {
+            srcDir("src/integrationTest/resources")
+        }
+    }
+}
+configurations {
+    // Конфигурация для integrationTest
+    val integrationTestImplementation by getting {
+        extendsFrom(configurations.testImplementation.get())
+        extendsFrom(configurations.implementation.get())
+    }
+
+    val integrationTestRuntimeOnly by getting {
+        extendsFrom(configurations.testRuntimeOnly.get())
+        extendsFrom(configurations.runtimeOnly.get())
+    }
+}
+
+
+val mockitoAgent = configurations.create("mockitoAgent")
+
+dependencies {
+    compileOnly("org.projectlombok:lombok")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly("org.postgresql:postgresql")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("rikser123:bundle:0.0.56")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+    testImplementation("org.mock-server:mockserver-netty:5.15.0")
+    testImplementation("org.mock-server:mockserver-client-java:5.15.0")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+    testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+}
+
+
+tasks.withType<ProcessResources>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+
+    useJUnitPlatform()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
+

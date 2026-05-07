@@ -1,0 +1,15 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+  application:
+    name: rrikser-yandex-fetcher
+  liquibase:
+    change-log: classpath:/db/changelog/changelog-master.xml
+    drop-first: true
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
