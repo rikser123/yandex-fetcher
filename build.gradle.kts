@@ -43,7 +43,6 @@ configurations {
 repositories {
     mavenCentral()
     gradlePluginPortal()
-    // Добавляем Alibaba mirror как запасной вариант
     maven {
         name = "GitHubPackagesBundle"
         url = uri("https://maven.pkg.github.com/rikser123/rikser-bundle")
@@ -79,6 +78,12 @@ configurations {
     }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")    }
+}
+
+
 
 val mockitoAgent = configurations.create("mockitoAgent")
 
@@ -88,18 +93,13 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("rikser123:bundle:0.0.57")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("rikser123:bundle:0.0.92")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
-    testImplementation("org.mock-server:mockserver-netty:5.15.0")
     testImplementation("org.mock-server:mockserver-client-java:5.15.0")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
-    testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")

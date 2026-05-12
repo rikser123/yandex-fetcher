@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import reactor.core.publisher.Mono;
 import rikser123.bundle.dto.response.RikserResponseItem;
 
 
@@ -21,6 +20,6 @@ public interface UserApi {
 
   @GetMapping("/get")
   @Operation(description = "Регистрация пользователя")
-  Mono<RikserResponseItem<Object>> get();
+  RikserResponseItem<Object> get();
 
 }

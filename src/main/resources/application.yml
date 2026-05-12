@@ -1,7 +1,8 @@
 spring:
+  config:
+    import: classpath:logbook.yml
   main:
     allow-bean-definition-overriding: true
-    web-application-type: reactive
   application:
     name: rikser-yandex-fetcher
   datasource:
@@ -24,12 +25,6 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
-  http:
-    codecs:
-      max-in-memory-size: 10MB
-  webflux:
-    client:
-      log-request-details: true
 
 server:
   port: 8081
@@ -40,22 +35,21 @@ springdoc:
   swagger-ui:
     enabled: false
 
-security:
-  enabled: true
-  service:
+bundle:
+  security:
     enabled: true
-    url: http://security:8081
+    service:
+      enabled: true
+      url: http://security:8081
 
 
 management:
+  tracing:
+    enabled: true
   endpoints:
     web:
       exposure:
         include: health,info
-  endpoint:
-    endpoint:
-      loggers:
-        enabled: true
     health:
       show-details: always
       status:

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.yandexfetcher.controller.UserApi;
@@ -21,7 +20,7 @@ import rikser123.yandexfetcher.controller.UserApi;
 public class UserController implements UserApi {
 
   @Override
-  public Mono<RikserResponseItem<Object>> get() {
-    return Mono.just(new RikserResponseItem<>());
+  public RikserResponseItem<Object> get() {
+    return new RikserResponseItem<>();
   }
 }
