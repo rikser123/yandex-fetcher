@@ -55,3 +55,6 @@ management:
       status:
         http-mapping:
           down: 503
+
+yandex:
+  token: ${YANDEX_TOKEN}
