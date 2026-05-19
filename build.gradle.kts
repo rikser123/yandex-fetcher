@@ -99,6 +99,7 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation("rikser123:bundle:0.0.100")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+    testImplementation("org.mock-server:mockserver-netty:5.15.0")
     testImplementation("org.mock-server:mockserver-client-java:5.15.0")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")

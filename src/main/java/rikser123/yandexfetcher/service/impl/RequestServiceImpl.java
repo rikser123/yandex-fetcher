@@ -15,6 +15,7 @@ import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
+import rikser123.yandexfetcher.service.RequestService;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,13 +23,14 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RequestServiceImpl {
+public class RequestServiceImpl implements RequestService {
   private final RequestRepository requestRepository;
   private final UserDetailService userDetailService;
   private final RequestResultMapper requestResultMapper;
   private final RequestResultRepository requestResultRepository;
 
   @Transactional
+  @Override
   public Request save(Request request) {
     return requestRepository.save(request);
   }
@@ -46,6 +48,7 @@ public class RequestServiceImpl {
   }
 
   @Transactional
+  @Override
   public List<RequestResult> saveRequestResults(List<YandexResponseXMLData.Doc> docs, Request request) {
     var requestResults = docs.stream().map(doc -> {
       var entity = requestResultMapper.mapFromDto(doc);

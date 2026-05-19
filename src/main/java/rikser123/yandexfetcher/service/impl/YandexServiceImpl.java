@@ -15,6 +15,7 @@ import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
+import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.YandexService;
 
 import java.util.Collection;
@@ -33,11 +34,12 @@ public class YandexServiceImpl implements YandexService {
   private final YandexOperationClient yandexOperationClient;
   private final YandexResponseXmlParser xmlParser;
   private final YandexProperties yandexProperties;
-  private final RequestServiceImpl requestService;
+  private final RequestService requestService;
 
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
 
+  @Override
   public RikserResponseItem<YandexSearchResponseDto> search(YandexSearchRequestDto searchDto) {
     var requestDto = buildRequestDto(searchDto);
     var authHeader = API_KEY + " " + yandexProperties.getToken();
