@@ -47,7 +47,7 @@ public class Request {
   @Enumerated(EnumType.STRING)
   private GroupsOnPage groupsOnPage;
 
-  @OneToMany(mappedBy = "result", fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
   private Set<RequestResult> requestResults;
 
   @UpdateTimestamp

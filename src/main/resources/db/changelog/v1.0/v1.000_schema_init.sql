@@ -9,7 +9,7 @@ CREATE TABLE request (
 );
 
 CREATE TABLE request_result (
-    id UUID PRIMARY KEY
+    id UUID PRIMARY KEY,
     status VARCHAR(50) NOT NULL,
     saved_copy_url TEXT,
     url TEXT NOT NULL,
@@ -19,8 +19,8 @@ CREATE TABLE request_result (
     size BIGINT,
     charset VARCHAR(50),
     mime_type VARCHAR(100),
-    passages TEXT NOT NULL,
+    passages TEXT,
     request_id UUID,
-    created TIMESTAMP WITH TIME ZONE,
-    updated TIMESTAMP WITH TIME ZONE NOT NULL
+    created TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated TIMESTAMP WITH TIME ZONE
 );

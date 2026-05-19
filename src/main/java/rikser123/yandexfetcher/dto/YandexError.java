@@ -6,28 +6,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class YandexResponseDto {
-  private String id;
-  private String description;
-  private String createdAt;
-  private String createdBy;
-  private String modifiedAt;
-  private boolean done;
-  private Object metadata;
-  private Error error;
-  private Response response;
-
-  @Data
-  @AllArgsConstructor
-  @NoArgsConstructor
-  private static class Error {
-    private Code code;
-    private String message;
-    private List<Object> details;
-  }
+@Data
+public class YandexError {
+  private Code code;
+  private String message;
+  private List<Object> details;
 
   @AllArgsConstructor
   private enum Code {
@@ -50,12 +35,5 @@ public class YandexResponseDto {
     DATA_LOSS(15);
 
     private int code;
-  }
-
-  @AllArgsConstructor
-  @NoArgsConstructor
-  @Data
-  private static class Response {
-    private String rawData;
   }
 }

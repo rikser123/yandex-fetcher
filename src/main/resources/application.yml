@@ -58,3 +58,7 @@ management:
 
 yandex:
   token: ${YANDEX_TOKEN}
+  searchApiUrl: ${YANDEX_SEARCH_API_URL}
+  operationApiUrl: ${YANDEX_OPERATION_API_URL}
+  maxAttempts: 4
+  delay: 500

@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import rikser123.yandexfetcher.dto.YandexRequestDto;
-import rikser123.yandexfetcher.dto.YandexResponseDto;
+import rikser123.yandexfetcher.dto.YandexResponseAsyncDto;
 
 @FeignClient(
   name = "yandex-client",
-  url = "https://searchapi.api.cloud.yandex.net"
+  url = "${yandex.searchApiUrl}"
 )
-public interface YandexClient {
+public interface YandexSearchClient {
   @PostMapping("/v2/web/searchAsync")
-  YandexResponseDto search(
+  YandexResponseAsyncDto search(
     @RequestBody @Valid YandexRequestDto searchDto,
     @RequestHeader("Authorization") String authorization
   );

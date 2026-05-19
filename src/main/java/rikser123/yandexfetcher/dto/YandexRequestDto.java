@@ -27,7 +27,7 @@ public class YandexRequestDto {
   @AllArgsConstructor
   @NoArgsConstructor
   @Data
-  private static class Query {
+  public static class Query {
     private SearchType searchType;
 
     @NotBlank(message = "Параметр queryText не должен быть пустым")
@@ -40,29 +40,29 @@ public class YandexRequestDto {
   @AllArgsConstructor
   @NoArgsConstructor
   @Data
-  private static class GroupSpec {
+  public static class GroupSpec {
     private GroupsOnPage groupsOnPage;
   }
 
   @AllArgsConstructor
   @NoArgsConstructor
   @Data
-  private static class SortSpec {
+  public static class SortSpec {
     private SortMode sortMode;
     private SortOrder sortOrder;
   }
 
-  private enum SortMode {
+  public enum SortMode {
     SORT_MODE_BY_RELEVANCE,
     SORT_MODE_BY_TIME
   }
 
-  private enum SortOrder {
+  public enum SortOrder {
     SORT_ORDER_ASC,
     SORT_ORDER_DESC
   }
 
-  private enum SearchType {
+  public enum SearchType {
     SEARCH_TYPE_RU,
     SEARCH_TYPE_TR,
     SEARCH_TYPE_COM,
@@ -71,12 +71,12 @@ public class YandexRequestDto {
     SEARCH_TYPE_UZ
   }
 
-  private enum ResponseFormat {
+  public enum ResponseFormat {
     FORMAT_XML,
     FORMAT_HTML
   }
 
-  private enum Localization {
+  public enum Localization {
     LOCALIZATION_RU,
     LOCALIZATION_UK,
     LOCALIZATION_BE,
@@ -85,7 +85,7 @@ public class YandexRequestDto {
     LOCALIZATION_EN
   }
 
-  private enum Period {
+  public enum Period {
     PERIOD_ALL_TIME,
     PERIOD_DAY,
     PERIOD_2_WEEKS,

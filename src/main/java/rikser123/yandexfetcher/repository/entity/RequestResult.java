@@ -10,6 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,6 +22,10 @@ import java.util.UUID;
 
 @Table(name = "request_result")
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class RequestResult {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,7 +60,7 @@ public class RequestResult {
   @Column(name = "mime_type")
   private String mimeType;
 
-  @Column(name = "passeges", nullable = false)
+  @Column(name = "passages")
   private String passages;
 
   @JoinColumn(name = "request_id")
