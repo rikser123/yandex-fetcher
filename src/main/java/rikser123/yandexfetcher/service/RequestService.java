@@ -1,9 +1,11 @@
 package rikser123.yandexfetcher.service;
 
+import rikser123.bundle.exception.StatusChangeException;
 import rikser123.yandexfetcher.dto.YandexResponseXMLData;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
+import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.util.List;
 
@@ -44,4 +46,14 @@ public interface RequestService {
    * @return список сохранённых результатов
    */
   List<RequestResult> saveRequestResults(List<YandexResponseXMLData.Doc> docs, Request request);
+
+  /**
+   * Изменение статуса запроса>
+   *
+   * @param request    запрос к яндексу
+   * @param status новый статус запроса
+   * @return новый запрос
+   * @throws StatusChangeException если статус невозможно изменить
+   */
+  Request changeStatus(Request request, RequestStatus status);
 }

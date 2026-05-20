@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
-import rikser123.yandexfetcher.configuration.YandexProperties;
+import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexResponse;
 import rikser123.yandexfetcher.dto.YandexResponseAsyncDto;
 import rikser123.yandexfetcher.dto.YandexResponseOperationDto;
@@ -17,6 +17,7 @@ import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
+import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.impl.YandexServiceImpl;
 import static org.awaitility.Awaitility.await;
 
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,6 +77,7 @@ public class YandexServiceTest {
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
         verify(yandexSearchClient, times(4)).search(any(), any());
+        verify(requestService, times(1)).changeStatus(any(), eq(RequestStatus.FAILED));
       });
   }
 
@@ -97,6 +100,7 @@ public class YandexServiceTest {
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
         verify(yandexOperationClient, times(4)).getSearchData(any(), any());
+        verify(requestService, times(1)).changeStatus(any(), eq(RequestStatus.FAILED));
       });
   }
 
@@ -131,6 +135,7 @@ public class YandexServiceTest {
           assertThat(arg.size()).isEqualTo(11);
           return true;
         }), any());
+        verify(requestService, times(1)).changeStatus(any(), eq(RequestStatus.IN_PROCESSING));
       });
   }
 

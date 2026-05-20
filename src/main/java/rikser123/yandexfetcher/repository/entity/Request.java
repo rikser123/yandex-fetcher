@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -46,6 +47,10 @@ public class Request {
   @Column(name = "groups_on_page", length = 20)
   @Enumerated(EnumType.STRING)
   private GroupsOnPage groupsOnPage;
+
+  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private RequestStatus status;
 
   @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
   private Set<RequestResult> requestResults;

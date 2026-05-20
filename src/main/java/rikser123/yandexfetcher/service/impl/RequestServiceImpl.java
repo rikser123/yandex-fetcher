@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rikser123.bundle.dto.User;
+import rikser123.bundle.exception.StatusChangeException;
+import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.dto.YandexResponseXMLData;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
@@ -15,6 +17,7 @@ import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
+import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.RequestService;
 
 import java.util.List;
@@ -28,6 +31,7 @@ public class RequestServiceImpl implements RequestService {
   private final UserDetailService userDetailService;
   private final RequestResultMapper requestResultMapper;
   private final RequestResultRepository requestResultRepository;
+  private final StatusMatrix<RequestStatus> requestStatusMatrix;
 
   @Transactional
   @Override
@@ -43,6 +47,7 @@ public class RequestServiceImpl implements RequestService {
     request.setGroupsOnPage(Objects.isNull(dto.getGroupsOnPage()) ? GroupsOnPage.TEN : dto.getGroupsOnPage());
     request.setQueryText(dto.getQueryText());
     request.setUserId(user.getId());
+    request.setStatus(RequestStatus.CREATED);
 
     return save(request);
   }
@@ -57,5 +62,22 @@ public class RequestServiceImpl implements RequestService {
     }).toList();
 
     return requestResultRepository.saveAll(requestResults);
+  }
+
+  @Override
+  @Transactional
+  public Request changeStatus(Request request, RequestStatus status) {
+    if (request.getStatus() == status || !requestStatusMatrix.isAvailable(request.getStatus(), status)) {
+      log.warn(
+        "ERROR: while checkStatusMovement for request: {} from: {} to: {}",
+        request.getId(),
+        request.getStatus(),
+        status);
+      throw new StatusChangeException();
+    }
+
+    request.setStatus(status);
+    requestRepository.save(request);
+    return request;
   }
 }

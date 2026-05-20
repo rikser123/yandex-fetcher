@@ -4,6 +4,7 @@ CREATE TABLE request (
      query_text VARCHAR(400) NOT NULL,
      family_mode VARCHAR(50),
      groups_on_page VARCHAR(20),
+     status VARCHAR(40),
      updated TIMESTAMP WITH TIME ZONE,
      created TIMESTAMP WITH TIME ZONE NOT NULL
 );

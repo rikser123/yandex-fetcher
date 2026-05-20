@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.bundle.utils.RikserResponseUtils;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
-import rikser123.yandexfetcher.configuration.YandexProperties;
+import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexRequestDto;
 import rikser123.yandexfetcher.dto.YandexResponseOperationDto;
 import rikser123.yandexfetcher.dto.YandexResponseXMLData;
@@ -15,6 +15,7 @@ import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
+import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.YandexService;
 
@@ -58,10 +59,10 @@ public class YandexServiceImpl implements YandexService {
       .whenComplete((result, error) -> {
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
-        }
-
-        if (!Objects.isNull(error)) {
+          requestService.changeStatus(request, RequestStatus.IN_PROCESSING);
+        } else if (!Objects.isNull(error)) {
           log.warn("error get operation with query {} {}", searchDto.getQueryText(), error);
+          requestService.changeStatus(request, RequestStatus.FAILED);
         }
       });
 

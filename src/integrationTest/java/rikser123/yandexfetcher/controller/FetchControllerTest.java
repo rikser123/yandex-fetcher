@@ -13,6 +13,7 @@ import rikser123.yandexfetcher.IntegrationUtils;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.repository.RequestRepository;
 import rikser123.yandexfetcher.repository.RequestResultRepository;
+import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -68,6 +69,8 @@ public class FetchControllerTest extends BaseConfig {
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
         assertThat(requestResultRepository.findAll().size()).isEqualTo(11);
+        var allRequests = requestRepository.findAll();
+        assertThat(allRequests.getFirst().getStatus()).isEqualTo(RequestStatus.IN_PROCESSING);
       });
 
   }

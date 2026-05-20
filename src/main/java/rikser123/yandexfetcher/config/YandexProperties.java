@@ -1,4 +1,4 @@
-package rikser123.yandexfetcher.configuration;
+package rikser123.yandexfetcher.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
