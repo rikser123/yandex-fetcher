@@ -1,8 +1,8 @@
 spring:
-  config:
-    import: classpath:logbook.yml
   main:
     allow-bean-definition-overriding: true
+  config:
+    import: classpath:logbook.yml
   application:
     name: rikser-yandex-fetcher
   datasource:
@@ -25,6 +25,12 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      timeout: 2000ms
 
 server:
   port: 8081
@@ -41,6 +47,10 @@ bundle:
     service:
       enabled: true
       url: http://security:8081
+  redis:
+    TTL: P1D
+    prefix: yandex-query
+    enabled: true
 
 
 management:

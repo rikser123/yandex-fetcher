@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import rikser123.bundle.dto.User;
 import rikser123.bundle.dto.response.RikserResponseItem;
+import rikser123.bundle.service.RedisCacheService;
+import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.utils.RikserResponseUtils;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
@@ -15,6 +18,7 @@ import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
+import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.YandexService;
@@ -36,12 +40,27 @@ public class YandexServiceImpl implements YandexService {
   private final YandexResponseXmlParser xmlParser;
   private final YandexProperties yandexProperties;
   private final RequestService requestService;
+  private final RedisCacheService redisCacheService;
+  private final UserDetailService userDetailService;
 
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
 
   @Override
   public RikserResponseItem<YandexSearchResponseDto> search(YandexSearchRequestDto searchDto) {
+    var currentUser = (User) userDetailService.getCurrentUser();
+    var existedRequestOpt = requestService.findProcessingRequest(currentUser.getId(), searchDto.getQueryText());
+
+    if (existedRequestOpt.isPresent()) {
+      return createSearchResponse(existedRequestOpt.get());
+    }
+
+    Optional<Request> existedQueryOpt = redisCacheService.get(searchDto.getQueryText(), Request.class);
+    if (existedQueryOpt.isPresent()) {
+      var request = existedQueryOpt.get();
+      return createSearchResponse(request);
+    }
+
     var requestDto = buildRequestDto(searchDto);
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = requestService.saveByYandexRequest(searchDto);
@@ -60,16 +79,14 @@ public class YandexServiceImpl implements YandexService {
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
           requestService.changeStatus(request, RequestStatus.IN_PROCESSING);
+          redisCacheService.put(searchDto.getQueryText(), request);
         } else if (!Objects.isNull(error)) {
           log.warn("error get operation with query {} {}", searchDto.getQueryText(), error);
           requestService.changeStatus(request, RequestStatus.FAILED);
         }
       });
 
-    var responseDto = new YandexSearchResponseDto();
-    responseDto.setRequestId(request.getId());
-
-    return RikserResponseUtils.createResponse(responseDto);
+   return createSearchResponse(request);
   }
 
   private String getOperationId(YandexRequestDto searchDto, String authHeader, int attempts) {
@@ -145,5 +162,11 @@ public class YandexServiceImpl implements YandexService {
       .map(YandexResponseXMLData.Group::getDocs)
       .flatMap(Collection::stream)
       .toList();
+  }
+
+  private RikserResponseItem<YandexSearchResponseDto> createSearchResponse(Request request) {
+    var responseDto = new YandexSearchResponseDto();
+    responseDto.setRequestId(request.getId());
+    return RikserResponseUtils.createResponse(responseDto);
   }
 }

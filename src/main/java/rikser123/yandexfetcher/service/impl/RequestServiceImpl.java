@@ -22,6 +22,8 @@ import rikser123.yandexfetcher.service.RequestService;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -79,5 +81,14 @@ public class RequestServiceImpl implements RequestService {
     request.setStatus(status);
     requestRepository.save(request);
     return request;
+  }
+
+  @Override
+  public Optional<Request> findProcessingRequest(UUID userId, String queryText) {
+    return requestRepository.findByUserIdAndQueryTextAndStatusIsIn(
+      userId,
+      queryText,
+      List.of(RequestStatus.IN_PROCESSING, RequestStatus.CREATED)
+    );
   }
 }

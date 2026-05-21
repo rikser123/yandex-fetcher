@@ -66,7 +66,6 @@ sourceSets {
     }
 }
 configurations {
-    // Конфигурация для integrationTest
     val integrationTestImplementation by getting {
         extendsFrom(configurations.testImplementation.get())
         extendsFrom(configurations.implementation.get())
@@ -97,7 +96,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2")
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("rikser123:bundle:0.0.101")
+    implementation("rikser123:bundle:0.0.103")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation("org.mock-server:mockserver-netty:5.15.0")
     testImplementation("org.mock-server:mockserver-client-java:5.15.0")

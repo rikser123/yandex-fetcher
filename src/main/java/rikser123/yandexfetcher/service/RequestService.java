@@ -8,6 +8,8 @@ import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Сервис для управления запросами и результатами поиска.
@@ -56,4 +58,13 @@ public interface RequestService {
    * @throws StatusChangeException если статус невозможно изменить
    */
   Request changeStatus(Request request, RequestStatus status);
+
+  /**
+   * Найти текущий запрос в обработке для пользователя
+   *
+   * @param userId    Id пользователя
+   * @param queryText запрос пользователя
+   * @return новый запрос
+   */
+  Optional<Request> findProcessingRequest(UUID userId, String queryText);
 }

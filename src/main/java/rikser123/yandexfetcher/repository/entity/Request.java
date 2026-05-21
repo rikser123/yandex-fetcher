@@ -14,11 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +53,7 @@ public class Request {
   private RequestStatus status;
 
   @OneToMany(mappedBy = "request", fetch = FetchType.LAZY)
-  private Set<RequestResult> requestResults;
+  private Set<RequestResult> requestResults = new HashSet<>();
 
   @UpdateTimestamp
   @Column(name = "updated", insertable = false)

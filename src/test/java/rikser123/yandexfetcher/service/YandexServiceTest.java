@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import rikser123.bundle.dto.User;
+import rikser123.bundle.service.RedisCacheService;
+import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexResponse;
@@ -23,6 +26,7 @@ import static org.awaitility.Awaitility.await;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +50,12 @@ public class YandexServiceTest {
   @Mock
   private RequestService requestService;
 
+  @Mock
+  private RedisCacheService redisCacheService;
+
+  @Mock
+  private UserDetailService userDetailService;
+
   @BeforeEach
   void init() {
     var yandexProperties = new YandexProperties();
@@ -58,7 +68,9 @@ public class YandexServiceTest {
       yandexOperationClient,
       new YandexResponseXmlParser(),
       yandexProperties,
-      requestService
+      requestService,
+      redisCacheService,
+      userDetailService
     );
   }
 
@@ -70,6 +82,7 @@ public class YandexServiceTest {
 
     when(requestService.saveByYandexRequest(any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(new YandexResponseAsyncDto());
+    when(userDetailService.getCurrentUser()).thenReturn(new User());
     yandexService.search(searchDto);
 
     await()
@@ -93,6 +106,7 @@ public class YandexServiceTest {
     when(requestService.saveByYandexRequest(any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(new YandexResponseOperationDto());
+    when(userDetailService.getCurrentUser()).thenReturn(new User());
     yandexService.search(searchDto);
 
     await()
@@ -125,6 +139,7 @@ public class YandexServiceTest {
     when(requestService.saveByYandexRequest(any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(operationDto);
+    when(userDetailService.getCurrentUser()).thenReturn(new User());
     yandexService.search(searchDto);
 
     await()
@@ -137,6 +152,22 @@ public class YandexServiceTest {
         }), any());
         verify(requestService, times(1)).changeStatus(any(), eq(RequestStatus.IN_PROCESSING));
       });
+  }
+
+  @Test
+  void shouldReturnExistedProcessingRequest() {
+    var request = createRequest();
+    request.setStatus(RequestStatus.IN_PROCESSING);
+    var user = new User();
+    user.setId(UUID.randomUUID());
+    var searchDto = new YandexSearchRequestDto();
+    searchDto.setQueryText("queryText");
+
+    when(userDetailService.getCurrentUser()).thenReturn(user);
+    when(requestService.findProcessingRequest(eq(user.getId()), eq(request.getQueryText()))).thenReturn(Optional.of(request));
+
+    var result = yandexService.search(searchDto);
+    assertThat(result.getData().getRequestId()).isEqualTo(request.getId());
   }
 
   private static Request createRequest() {
