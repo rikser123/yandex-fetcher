@@ -24,4 +24,13 @@ public class YandexSearchRequestDto {
 
   @Schema(description = "Количество записей для обработки")
   private GroupsOnPage groupsOnPage;
+
+  @Schema(description = "Тип сортировки")
+  private YandexRequestDto.SortMode sortMode;
+
+  @Schema(description = "Направление сортировки")
+  private YandexRequestDto.SortOrder sortOrder;
+
+  @Schema(description = "Период запроса")
+  private YandexRequestDto.Period period;
 }

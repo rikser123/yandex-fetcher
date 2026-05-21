@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.bundle.dto.User;
@@ -17,6 +18,7 @@ import rikser123.yandexfetcher.dto.YandexResponseOperationDto;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
+import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
@@ -56,6 +58,8 @@ public class YandexServiceTest {
   @Mock
   private UserDetailService userDetailService;
 
+  private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
+
   @BeforeEach
   void init() {
     var yandexProperties = new YandexProperties();
@@ -70,7 +74,8 @@ public class YandexServiceTest {
       yandexProperties,
       requestService,
       redisCacheService,
-      userDetailService
+      userDetailService,
+      yandexMapper
     );
   }
 

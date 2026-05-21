@@ -18,6 +18,7 @@ import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
+import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.RequestService;
@@ -42,6 +43,7 @@ public class YandexServiceImpl implements YandexService {
   private final RequestService requestService;
   private final RedisCacheService redisCacheService;
   private final UserDetailService userDetailService;
+  private final YandexMapper yandexMapper;
 
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
@@ -61,7 +63,7 @@ public class YandexServiceImpl implements YandexService {
       return createSearchResponse(request);
     }
 
-    var requestDto = buildRequestDto(searchDto);
+    var requestDto = yandexMapper.mapToRequestDto(searchDto);
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = requestService.saveByYandexRequest(searchDto);
     var currentAttempts = 0;
@@ -131,24 +133,6 @@ public class YandexServiceImpl implements YandexService {
     }
 
     return yandexResult;
-  }
-
-  private YandexRequestDto buildRequestDto(YandexSearchRequestDto searchDto) {
-    var requestDto = new YandexRequestDto();
-    requestDto.setResponseFormat(YandexRequestDto.ResponseFormat.FORMAT_XML);
-
-    var query = new YandexRequestDto.Query();
-    query.setQueryText(searchDto.getQueryText());
-    query.setSearchType(YandexRequestDto.SearchType.SEARCH_TYPE_RU);
-    query.setFamilyMode(searchDto.getFamilyMode());
-    requestDto.setQuery(query);
-
-    var groupSpec = new YandexRequestDto.GroupSpec();
-    groupSpec.setGroupsOnPage(searchDto.getGroupsOnPage());
-    requestDto.setGroupSpec(groupSpec);
-    requestDto.setGroupSpec(groupSpec);
-
-    return requestDto;
   }
 
   private List<YandexResponseXMLData.Doc> getDocs(YandexResponseXMLData xmlData) {
