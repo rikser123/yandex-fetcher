@@ -1,5 +1,9 @@
 package rikser123.yandexfetcher.service.impl;
 
+import com.optimaize.langdetect.LanguageDetector;
+import com.optimaize.langdetect.i18n.LdLocale;
+import com.optimaize.langdetect.text.CommonTextObjectFactories;
+import com.optimaize.langdetect.text.TextObjectFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,9 +48,13 @@ public class YandexServiceImpl implements YandexService {
   private final RedisCacheService redisCacheService;
   private final UserDetailService userDetailService;
   private final YandexMapper yandexMapper;
+  private final LanguageDetector languageDetector;
+
+  private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
 
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
+  private static final String DEFAULT_LANGUAGE = "ru";
 
   @Override
   public RikserResponseItem<YandexSearchResponseDto> search(YandexSearchRequestDto searchDto) {
@@ -64,6 +72,8 @@ public class YandexServiceImpl implements YandexService {
     }
 
     var requestDto = yandexMapper.mapToRequestDto(searchDto);
+    var localization = getLocalization(searchDto.getQueryText());
+    requestDto.setL10n(localization);
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = requestService.saveByYandexRequest(searchDto);
     var currentAttempts = 0;
@@ -152,5 +162,22 @@ public class YandexServiceImpl implements YandexService {
     var responseDto = new YandexSearchResponseDto();
     responseDto.setRequestId(request.getId());
     return RikserResponseUtils.createResponse(responseDto);
+  }
+
+  private YandexRequestDto.Localization getLocalization(String text) {
+    var textObject = textFactory.forText(text);
+    var langOpt = Optional.ofNullable(languageDetector.detect(textObject))
+      .map(opt -> opt.isPresent() ? opt.get() : null)
+      .map(LdLocale::getLanguage)
+      .orElse(DEFAULT_LANGUAGE);
+
+    return switch (langOpt) {
+      case "uk" -> YandexRequestDto.Localization.LOCALIZATION_UK;
+      case "be" -> YandexRequestDto.Localization.LOCALIZATION_BE;
+      case "kk" -> YandexRequestDto.Localization.LOCALIZATION_KK;
+      case "tr" -> YandexRequestDto.Localization.LOCALIZATION_TR;
+      case "en" -> YandexRequestDto.Localization.LOCALIZATION_EN;
+      default -> YandexRequestDto.Localization.LOCALIZATION_RU;
+    };
   }
 }

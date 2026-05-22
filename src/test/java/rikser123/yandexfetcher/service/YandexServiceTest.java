@@ -1,5 +1,6 @@
 package rikser123.yandexfetcher.service;
 
+import com.optimaize.langdetect.LanguageDetector;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.impl.YandexServiceImpl;
 import static org.awaitility.Awaitility.await;
+import com.optimaize.langdetect.i18n.LdLocale;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -58,6 +60,9 @@ public class YandexServiceTest {
   @Mock
   private UserDetailService userDetailService;
 
+  @Mock
+  private LanguageDetector languageDetector;
+
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
 
   @BeforeEach
@@ -75,8 +80,11 @@ public class YandexServiceTest {
       requestService,
       redisCacheService,
       userDetailService,
-      yandexMapper
+      yandexMapper,
+      languageDetector
     );
+
+    when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
   }
 
   @Test
