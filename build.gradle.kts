@@ -98,6 +98,7 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation("rikser123:bundle:0.0.103")
     implementation("com.optimaize.languagedetector:language-detector:0.6")
+    implementation("org.lionsoul:ip2region:3.3.7")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation("org.mock-server:mockserver-netty:5.15.0")
     testImplementation("org.mock-server:mockserver-client-java:5.15.0")

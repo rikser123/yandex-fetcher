@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.service.RedisCacheService;
@@ -63,7 +64,12 @@ public class YandexServiceTest {
   @Mock
   private LanguageDetector languageDetector;
 
+  @Mock
+  private Ip2RegionService ip2RegionService;
+
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
+
+  private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
 
   @BeforeEach
   void init() {
@@ -81,10 +87,12 @@ public class YandexServiceTest {
       redisCacheService,
       userDetailService,
       yandexMapper,
-      languageDetector
+      languageDetector,
+      ip2RegionService
     );
 
     when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
+    when(ip2RegionService.getCountryCode(any())).thenReturn("ru");
   }
 
   @Test
@@ -96,7 +104,7 @@ public class YandexServiceTest {
     when(requestService.saveByYandexRequest(any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(new YandexResponseAsyncDto());
     when(userDetailService.getCurrentUser()).thenReturn(new User());
-    yandexService.search(searchDto);
+    yandexService.search(searchDto, mockHttpServletRequest);
 
     await()
       .atMost(Duration.ofSeconds(5))
@@ -120,7 +128,7 @@ public class YandexServiceTest {
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(new YandexResponseOperationDto());
     when(userDetailService.getCurrentUser()).thenReturn(new User());
-    yandexService.search(searchDto);
+    yandexService.search(searchDto, mockHttpServletRequest);
 
     await()
       .atMost(Duration.ofSeconds(5))
@@ -153,7 +161,7 @@ public class YandexServiceTest {
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(operationDto);
     when(userDetailService.getCurrentUser()).thenReturn(new User());
-    yandexService.search(searchDto);
+    yandexService.search(searchDto, mockHttpServletRequest);
 
     await()
       .atMost(Duration.ofSeconds(5))
@@ -179,7 +187,7 @@ public class YandexServiceTest {
     when(userDetailService.getCurrentUser()).thenReturn(user);
     when(requestService.findProcessingRequest(eq(user.getId()), eq(request.getQueryText()))).thenReturn(Optional.of(request));
 
-    var result = yandexService.search(searchDto);
+    var result = yandexService.search(searchDto, mockHttpServletRequest);
     assertThat(result.getData().getRequestId()).isEqualTo(request.getId());
   }
 

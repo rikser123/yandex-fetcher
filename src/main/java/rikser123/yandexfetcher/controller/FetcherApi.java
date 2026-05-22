@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,8 @@ public interface FetcherApi {
   RikserResponseItem<YandexSearchResponseDto> search(
     @Parameter(description = "Параметры для поиска", required = true)
     @RequestBody
-    RikserRequestItem<YandexSearchRequestDto> requestDto);
+    RikserRequestItem<YandexSearchRequestDto> requestDto,
+    HttpServletRequest httpServletRequest
+  );
 
 }

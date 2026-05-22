@@ -4,6 +4,7 @@ import com.optimaize.langdetect.LanguageDetector;
 import com.optimaize.langdetect.i18n.LdLocale;
 import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObjectFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
+import rikser123.yandexfetcher.service.Ip2RegionService;
 import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.YandexService;
 
@@ -35,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,7 @@ public class YandexServiceImpl implements YandexService {
   private final UserDetailService userDetailService;
   private final YandexMapper yandexMapper;
   private final LanguageDetector languageDetector;
+  private final Ip2RegionService ip2RegionService;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
 
@@ -57,7 +61,10 @@ public class YandexServiceImpl implements YandexService {
   private static final String DEFAULT_LANGUAGE = "ru";
 
   @Override
-  public RikserResponseItem<YandexSearchResponseDto> search(YandexSearchRequestDto searchDto) {
+  public RikserResponseItem<YandexSearchResponseDto> search(
+    YandexSearchRequestDto searchDto,
+    HttpServletRequest servletRequest
+  ) {
     var currentUser = (User) userDetailService.getCurrentUser();
     var existedRequestOpt = requestService.findProcessingRequest(currentUser.getId(), searchDto.getQueryText());
 
@@ -74,6 +81,11 @@ public class YandexServiceImpl implements YandexService {
     var requestDto = yandexMapper.mapToRequestDto(searchDto);
     var localization = getLocalization(searchDto.getQueryText());
     requestDto.setL10n(localization);
+
+    var clientIp = getClientIp(servletRequest);
+    var searchType = getSearchType(clientIp);
+    requestDto.getQuery().setSearchType(searchType);
+
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = requestService.saveByYandexRequest(searchDto);
     var currentAttempts = 0;
@@ -179,5 +191,34 @@ public class YandexServiceImpl implements YandexService {
       case "en" -> YandexRequestDto.Localization.LOCALIZATION_EN;
       default -> YandexRequestDto.Localization.LOCALIZATION_RU;
     };
+  }
+
+  private YandexRequestDto.SearchType getSearchType(String ip) {
+    var codeCountry = ip2RegionService.getCountryCode(ip).toUpperCase();
+
+    return switch (codeCountry) {
+      case "TR" -> YandexRequestDto.SearchType.SEARCH_TYPE_TR;
+      case "KZ" -> YandexRequestDto.SearchType.SEARCH_TYPE_KK;
+      case "BY" -> YandexRequestDto.SearchType.SEARCH_TYPE_BE;
+      case "UZ" -> YandexRequestDto.SearchType.SEARCH_TYPE_UZ;
+      case "US", "CA", "DE", "GB", "FR", "IT", "ES", "AU", "NL", "CH"
+        -> YandexRequestDto.SearchType.SEARCH_TYPE_COM;
+      default -> YandexRequestDto.SearchType.SEARCH_TYPE_RU;
+    };
+  }
+
+  private String getClientIp(HttpServletRequest request) {
+    return Stream.of(
+      request.getHeader("X-Forwarded-For"),
+      request.getHeader("Proxy-Client-IP"),
+      request.getHeader("WL-Proxy-Client-IP")
+    ).filter(StringUtils::isNotEmpty)
+      .map(address -> {
+      if (address.contains(",")) {
+        return address.split(",")[0].strip();
+      }
+
+      return address;
+    }).findFirst().orElse(null);
   }
 }

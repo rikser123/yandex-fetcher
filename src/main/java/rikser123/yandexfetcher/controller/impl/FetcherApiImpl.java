@@ -1,6 +1,7 @@
 package rikser123.yandexfetcher.controller.impl;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,9 @@ public class FetcherApiImpl implements FetcherApi {
   public RikserResponseItem<YandexSearchResponseDto> search(
     @RequestBody
     @Valid
-    RikserRequestItem<YandexSearchRequestDto> requestDto
+    RikserRequestItem<YandexSearchRequestDto> requestDto,
+    HttpServletRequest httpServletRequest
   ) {
-    return yandexService.search(requestDto.getData());
+    return yandexService.search(requestDto.getData(), httpServletRequest);
   }
 }
