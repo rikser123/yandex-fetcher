@@ -55,7 +55,6 @@ public class YandexServiceImpl implements YandexService {
   private final Ip2RegionService ip2RegionService;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
-
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
   private static final String DEFAULT_LANGUAGE = "ru";

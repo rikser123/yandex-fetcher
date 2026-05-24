@@ -8,6 +8,7 @@ import rikser123.yandexfetcher.dto.YandexResponseXMLData;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestResultStatus;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -22,7 +23,10 @@ public interface RequestResultMapper {
     entity.setStatus(RequestResultStatus.CREATED);
     var passages = Optional.ofNullable(dto.getPassages())
       .map(YandexResponseXMLData.Passages::getPassages)
-      .orElse(Collections.emptyList());
+      .stream()
+      .flatMap(Collection::stream)
+      .map(YandexResponseXMLData.Passage::getText)
+      .toList();
 
     var passagesText = String.join(";", passages);
     entity.setPassages(passagesText);

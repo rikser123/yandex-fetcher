@@ -164,9 +164,17 @@ public class YandexResponseXMLData {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class Passages {
+    @JacksonXmlElementWrapper(useWrapping = false) // говорит, что обертки нет
     @JacksonXmlProperty(localName = "passage")
+    private List<Passage> passages;
+  }
+
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Data
+  public static class Passage {
     @JacksonXmlText
-    private List<String> passages;
+    private String text;
   }
 
 
