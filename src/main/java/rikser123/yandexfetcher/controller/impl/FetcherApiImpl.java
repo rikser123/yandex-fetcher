@@ -1,6 +1,5 @@
 package rikser123.yandexfetcher.controller.impl;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.yandexfetcher.controller.FetcherApi;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
-import rikser123.yandexfetcher.service.YandexService;
+import rikser123.yandexfetcher.service.YandexSearchService;
 
 
 @RestController
@@ -22,7 +21,7 @@ import rikser123.yandexfetcher.service.YandexService;
 @RequiredArgsConstructor
 @Slf4j
 public class FetcherApiImpl implements FetcherApi {
-  private final YandexService yandexService;
+  private final YandexSearchService yandexService;
 
   @Override
   public RikserResponseItem<YandexSearchResponseDto> search(

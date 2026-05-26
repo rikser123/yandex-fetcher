@@ -28,7 +28,7 @@ import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.Ip2RegionService;
 import rikser123.yandexfetcher.service.RequestService;
-import rikser123.yandexfetcher.service.YandexService;
+import rikser123.yandexfetcher.service.YandexSearchService;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class YandexServiceImpl implements YandexService {
+public class YandexServiceImpl implements YandexSearchService {
   private final YandexSearchClient yandexClient;
   private final YandexOperationClient yandexOperationClient;
   private final YandexResponseXmlParser xmlParser;

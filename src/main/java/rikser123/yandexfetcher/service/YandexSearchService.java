@@ -15,7 +15,7 @@ import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
  * </ul>
  * Результат поиска обрабатывается асинхронно и сохраняется отдельно.
  */
-public interface YandexService {
+public interface YandexSearchService {
 
   /**
    * Запускает асинхронный поиск.

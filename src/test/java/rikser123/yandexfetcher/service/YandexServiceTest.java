@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 public class YandexServiceTest {
-  private YandexService yandexService;
+  private YandexSearchService yandexService;
 
   @Mock
   private YandexSearchClient yandexSearchClient;
