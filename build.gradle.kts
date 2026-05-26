@@ -96,7 +96,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2")
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("rikser123:bundle:0.0.104")
+    implementation("rikser123:bundle:0.0.114")
     implementation("com.optimaize.languagedetector:language-detector:0.6")
     implementation("org.lionsoul:ip2region:3.3.7")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
