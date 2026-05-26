@@ -31,6 +31,7 @@ import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.YandexSearchService;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,6 +65,8 @@ public class YandexServiceImpl implements YandexSearchService {
     YandexSearchRequestDto searchDto,
     HttpServletRequest servletRequest
   ) {
+    searchDto.setQueryText(searchDto.getQueryText().strip());
+
     var currentUser = (User) userDetailService.getCurrentUser();
     var existedRequestOpt = requestService.findProcessingRequest(currentUser.getId(), searchDto.getQueryText());
 
@@ -166,6 +169,11 @@ public class YandexServiceImpl implements YandexSearchService {
       .flatMap(Collection::stream)
       .map(YandexResponseXMLData.Group::getDocs)
       .flatMap(Collection::stream)
+      .filter(doc -> Optional.ofNullable(doc).
+        map(YandexResponseXMLData.Doc::getPassages)
+        .map(YandexResponseXMLData.Passages::getPassages)
+        .orElse(Collections.emptyList())
+        .size() > 0)
       .toList();
   }
 
