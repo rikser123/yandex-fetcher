@@ -16,10 +16,15 @@ springdoc:
   swagger-ui:
     enabled: false
 
+bundle:
+  redis:
+    enabled: false
+
 
 yandex:
   token: token
   searchApiUrl: http://localhost:8081
   operationApiUrl: http://localhost:8081
+  spellerApi: http://localhost:8081
   maxAttempts: 4
   delay: 500

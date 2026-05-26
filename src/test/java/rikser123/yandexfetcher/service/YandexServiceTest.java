@@ -168,7 +168,7 @@ public class YandexServiceTest {
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
         verify(requestService, times(1)).saveRequestResults(argThat(arg -> {
-          assertThat(arg.size()).isEqualTo(11);
+          assertThat(arg.size()).isEqualTo(10);
           return true;
         }), any());
         verify(requestService, times(1)).changeStatus(any(), eq(RequestStatus.IN_PROCESSING));

@@ -88,6 +88,9 @@ public class YandexServiceImpl implements YandexSearchService {
     var searchType = getSearchType(clientIp);
     requestDto.getQuery().setSearchType(searchType);
 
+    var userAgent = servletRequest.getHeader("User-Agent");
+    requestDto.setUserAgent(userAgent);
+
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = requestService.saveByYandexRequest(searchDto);
     var currentAttempts = 0;

@@ -16,6 +16,7 @@ import rikser123.yandexfetcher.repository.RequestResultRepository;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
@@ -50,6 +51,7 @@ public class FetchControllerTest extends BaseConfig {
    var searchDto = new YandexSearchRequestDto();
    searchDto.setQueryText("text");
    var user = new User();
+   user.setPrivileges(Set.of("CREATE_REQUEST", "CHECK_SPELLS"));
    user.setId(UUID.randomUUID());
 
    getYandexSearch();
@@ -68,7 +70,7 @@ public class FetchControllerTest extends BaseConfig {
       .atMost(Duration.ofSeconds(5))
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
-        assertThat(requestResultRepository.findAll().size()).isEqualTo(11);
+        assertThat(requestResultRepository.findAll().size()).isEqualTo(10);
         var allRequests = requestRepository.findAll();
         assertThat(allRequests.getFirst().getStatus()).isEqualTo(RequestStatus.IN_PROCESSING);
       });

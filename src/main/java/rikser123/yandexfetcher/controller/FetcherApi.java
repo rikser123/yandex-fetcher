@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public interface FetcherApi {
 
   @PostMapping("/search")
   @Operation(description = "Получение результатов поиска от яндекса")
+  @PreAuthorize("hasAuthority('CREATE_REQUEST')")
   RikserResponseItem<YandexSearchResponseDto> search(
     @Parameter(description = "Параметры для поиска", required = true)
     @RequestBody
