@@ -51,6 +51,9 @@ public class RequestServiceTest {
 
   private StatusMatrix<RequestStatus> statusMatrix= new StatusMatrixImpl<>();
 
+  @Mock
+  private KafkaRequestMessageService kafkaRequestMessageService;
+
   @Autowired
   private YandexResponseXmlParser parser;
 
@@ -61,7 +64,8 @@ public class RequestServiceTest {
       userDetailService,
       requestResultMapper,
       requestResultRepository,
-      statusMatrix
+      statusMatrix,
+      kafkaRequestMessageService
     );
 
     var yandexResponse = RequestServiceTest.class.getResourceAsStream("/yandex-response.txt");

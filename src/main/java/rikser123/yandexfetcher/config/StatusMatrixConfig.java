@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.impl.StatusMatrixImpl;
+import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.util.EnumSet;
@@ -16,6 +17,14 @@ public class StatusMatrixConfig {
     var statusMatrix = new StatusMatrixImpl<RequestStatus>();
     statusMatrix.addTransition(RequestStatus.CREATED, EnumSet.of(RequestStatus.IN_PROCESSING, RequestStatus.FAILED));
     statusMatrix.addTransition(RequestStatus.IN_PROCESSING, EnumSet.of(RequestStatus.PROCESSED, RequestStatus.FAILED));
+
+    return statusMatrix;
+  }
+
+  @Bean
+  public StatusMatrix<KafkaEntityStatus> kafkaStatusMatrix() {
+    var statusMatrix = new StatusMatrixImpl<KafkaEntityStatus>();
+    statusMatrix.addTransition(KafkaEntityStatus.CREATED, EnumSet.of(KafkaEntityStatus.SENT));
 
     return statusMatrix;
   }

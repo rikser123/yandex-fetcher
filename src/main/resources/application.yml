@@ -31,6 +31,11 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}
       timeout: 2000ms
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
   port: 8081
@@ -73,3 +78,7 @@ yandex:
   spellerApi: ${YANDEX_SPELLER_API_URL}
   maxAttempts: 4
   delay: 500
+
+kafka:
+  max-fetch-limit: 200
+  scheduler-delay: PT10S

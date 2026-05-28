@@ -25,3 +25,19 @@ CREATE TABLE request_result (
     created TIMESTAMP WITH TIME ZONE NOT NULL,
     updated TIMESTAMP WITH TIME ZONE
 );
+
+CREATE TABLE kafka_request_message (
+    id UUID PRIMARY KEY,
+    dto JSONB NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE shedlock (
+    name VARCHAR(64) NOT NULL PRIMARY KEY,
+    lock_until TIMESTAMP NOT NULL,
+    locked_at TIMESTAMP NOT NULL,
+    locked_by VARCHAR(255) NOT NULL
+);
+

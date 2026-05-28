@@ -9,6 +9,7 @@ import rikser123.bundle.dto.User;
 import rikser123.bundle.exception.StatusChangeException;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
+import rikser123.yandexfetcher.dto.KafkaMessageRequestResultDto;
 import rikser123.yandexfetcher.dto.YandexResponseXMLData;
 import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
 import rikser123.yandexfetcher.mapper.RequestResultMapper;
@@ -19,6 +20,7 @@ import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
+import rikser123.yandexfetcher.service.KafkaRequestMessageService;
 import rikser123.yandexfetcher.service.RequestService;
 
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class RequestServiceImpl implements RequestService {
   private final RequestResultMapper requestResultMapper;
   private final RequestResultRepository requestResultRepository;
   private final StatusMatrix<RequestStatus> requestStatusMatrix;
+  private final KafkaRequestMessageService kafkaRequestMessageService;
 
   private final static String PUNCTUATION_REGEX = "[!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~…—«»]";
   private final static int UNIQ_RATE = 10;
@@ -76,7 +79,19 @@ public class RequestServiceImpl implements RequestService {
     }).toList();
     var uniqResults = getOnlyUniqueResults(results);
 
-    return requestResultRepository.saveAll(uniqResults);
+    var savedResults = requestResultRepository.saveAll(uniqResults);
+
+    var kafkaDtos = savedResults.stream().map(result -> {
+      var kafkaDto = new KafkaMessageRequestResultDto();
+      kafkaDto.setUserId(request.getUserId());
+      kafkaDto.setDomain(result.getDomain());
+      kafkaDto.setRequestResultId(request.getId());
+      kafkaDto.setUrl(result.getUrl());
+      return kafkaDto;
+    }).toList();
+    kafkaRequestMessageService.saveAll(kafkaDtos);
+
+    return savedResults;
   }
 
   @Override

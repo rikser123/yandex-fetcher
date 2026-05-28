@@ -1,0 +1,41 @@
+package rikser123.yandexfetcher.producer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.stereotype.Component;
+import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
+import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;
+import rikser123.yandexfetcher.service.KafkaRequestMessageService;
+
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class KafkaRequestResultMessageProducer {
+  private final KafkaTemplate<String, String> kafkaTemplate;
+  private final ObjectMapper objectMapper;
+  private final KafkaRequestMessageService kafkaRequestMessageService;
+
+  private static final String TOPIC = "REQUEST";
+
+  @SneakyThrows
+  public CompletableFuture<SendResult<String, String>> send(KafkaRequestMessage kafkaRequestMessage) {
+    var dto = kafkaRequestMessage.getDto();
+    var message = objectMapper.writeValueAsString(dto);
+
+    return kafkaTemplate.send(TOPIC, message).whenComplete((result, error) -> {
+      if (!Objects.isNull(result)) {
+        log.info("message successfully send {}", kafkaRequestMessage.getId());
+        kafkaRequestMessageService.changeStatus(kafkaRequestMessage, KafkaEntityStatus.SENT);
+      } else if (!Objects.isNull(error)) {
+        log.warn("message fail send {}", kafkaRequestMessage.getId());
+      }
+    });
+  }
+}

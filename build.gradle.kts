@@ -96,11 +96,15 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2")
     mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    implementation("rikser123:bundle:0.0.114")
+    implementation("rikser123:bundle:0.0.115")
     implementation("com.optimaize.languagedetector:language-detector:0.6")
     implementation("org.lionsoul:ip2region:3.3.7")
     testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
     testImplementation("org.mock-server:mockserver-netty:5.15.0")
+    testImplementation("org.springframework.kafka:spring-kafka-test") {
+        exclude(group = "com.fasterxml.jackson.core")
+        exclude(group = "com.fasterxml.jackson.module")
+    }
     testImplementation("org.mock-server:mockserver-client-java:5.15.0")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
