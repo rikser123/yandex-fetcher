@@ -20,6 +20,10 @@ springdoc:
     enabled: false
 
 bundle:
+  security:
+    enabled: false
+    service:
+      enabled: false
   redis:
     enabled: false
 
