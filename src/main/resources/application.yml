@@ -31,11 +31,6 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}
       timeout: 2000ms
-  kafka:
-    bootstrap-servers: ${KAFKA_URL}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
   port: 8081
@@ -60,6 +55,7 @@ bundle:
     enabled: true
     user: ${KAFKA_USER}
     password: ${KAFKA_PASSWORD}
+    kafkaUrl: ${KAFKA_URL}
 
 
 management:
