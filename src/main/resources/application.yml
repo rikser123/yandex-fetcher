@@ -56,6 +56,10 @@ bundle:
     TTL: P1D
     prefix: yandex-query
     enabled: true
+  kafka:
+    enabled: true
+    user: ${KAFKA_USER}
+    password: ${KAFKA_PASSWORD}
 
 
 management:
