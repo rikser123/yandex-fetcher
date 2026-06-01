@@ -10,6 +10,6 @@ public class KafkaTopicConfig {
 
   @Bean
   public NewTopic request() {
-    return new NewTopic(REQUEST_TOPIC, 3, (short) 1);
+    return new NewTopic(REQUEST_TOPIC, 3, (short) 2);
   }
 }
