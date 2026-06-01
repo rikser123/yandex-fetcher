@@ -82,8 +82,6 @@ dependencyManagement {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")    }
 }
 
-
-
 val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {

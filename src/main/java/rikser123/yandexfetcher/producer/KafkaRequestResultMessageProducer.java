@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
 import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;
 import rikser123.yandexfetcher.service.KafkaRequestMessageService;
+import static rikser123.yandexfetcher.config.KafkaTopicConfig.REQUEST_TOPIC;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -22,14 +23,12 @@ public class KafkaRequestResultMessageProducer {
   private final ObjectMapper objectMapper;
   private final KafkaRequestMessageService kafkaRequestMessageService;
 
-  private static final String TOPIC = "REQUEST";
-
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(KafkaRequestMessage kafkaRequestMessage) {
     var dto = kafkaRequestMessage.getDto();
     var message = objectMapper.writeValueAsString(dto);
 
-    return kafkaTemplate.send(TOPIC, message).whenComplete((result, error) -> {
+    return kafkaTemplate.send(REQUEST_TOPIC, message).whenComplete((result, error) -> {
       if (!Objects.isNull(result)) {
         log.info("message successfully send {}", kafkaRequestMessage.getId());
         kafkaRequestMessageService.changeStatus(kafkaRequestMessage, KafkaEntityStatus.SENT);
