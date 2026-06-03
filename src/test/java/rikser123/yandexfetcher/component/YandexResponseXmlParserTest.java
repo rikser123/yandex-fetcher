@@ -3,7 +3,7 @@ package rikser123.yandexfetcher.component;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
 
 import java.nio.charset.StandardCharsets;
 

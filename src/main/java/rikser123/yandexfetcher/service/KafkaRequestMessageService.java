@@ -1,11 +1,9 @@
 package rikser123.yandexfetcher.service;
 
 import rikser123.bundle.exception.StatusChangeException;
-import rikser123.yandexfetcher.dto.KafkaMessageRequestResultDto;
+import rikser123.yandexfetcher.dto.request.KafkaMessageRequestResultDto;
 import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
 import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;
-import rikser123.yandexfetcher.repository.entity.Request;
-import rikser123.yandexfetcher.repository.entity.RequestStatus;
 
 import java.util.List;
 

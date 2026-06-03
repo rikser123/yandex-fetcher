@@ -4,8 +4,8 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import rikser123.yandexfetcher.dto.YandexRequestDto;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
 
 @Mapper(componentModel = "spring")
 public interface YandexMapper {

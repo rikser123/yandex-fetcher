@@ -1,8 +1,10 @@
-package rikser123.yandexfetcher.dto;
+package rikser123.yandexfetcher.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rikser123.yandexfetcher.dto.YandexError;
+import rikser123.yandexfetcher.dto.YandexResponse;
 
 @Data
 @AllArgsConstructor

@@ -1,8 +1,11 @@
 package rikser123.yandexfetcher.service;
 
+import org.springframework.data.domain.Page;
 import rikser123.bundle.exception.StatusChangeException;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
+import rikser123.yandexfetcher.dto.response.RequestResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
@@ -67,4 +70,12 @@ public interface RequestService {
    * @return новый запрос
    */
   Optional<Request> findProcessingRequest(UUID userId, String queryText);
+
+  /**
+   * Найти все записи пользователя
+   *
+   * @param filter    Фильтры на запросы пользователя
+   * @return Список запросов пользователя в яндекс
+   */
+  Page<RequestResponseDto> findAll(YandexRequestListDto filter);
 }

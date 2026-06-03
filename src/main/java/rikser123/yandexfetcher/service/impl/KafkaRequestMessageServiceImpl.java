@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rikser123.bundle.exception.StatusChangeException;
 import rikser123.bundle.service.StatusMatrix;
-import rikser123.yandexfetcher.dto.KafkaMessageRequestResultDto;
+import rikser123.yandexfetcher.dto.request.KafkaMessageRequestResultDto;
 import rikser123.yandexfetcher.repository.KafkaRequestMessageRepository;
 import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
 import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;

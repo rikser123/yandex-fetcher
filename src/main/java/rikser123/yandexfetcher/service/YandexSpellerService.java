@@ -1,7 +1,7 @@
 package rikser123.yandexfetcher.service;
 
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.YandexSpellerResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexSpellerResponseDto;
 
 /**
  * Сервис исправления орфографии через Яндекс.Спеллер.

@@ -1,5 +1,6 @@
 package rikser123.yandexfetcher.service;
 
+import feign.ResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,8 @@ import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.service.impl.StatusMatrixImpl;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
+import rikser123.yandexfetcher.mapper.RequestMapper;
 import rikser123.yandexfetcher.mapper.RequestResultMapper;
 import rikser123.yandexfetcher.repository.RequestRepository;
 import rikser123.yandexfetcher.repository.RequestResultRepository;
@@ -46,6 +48,8 @@ public class RequestServiceTest {
 
   private RequestResultMapper requestResultMapper = Mappers.getMapper(RequestResultMapper.class);
 
+  private RequestMapper requestMapper = Mappers.getMapper(RequestMapper.class);
+
   @Mock
   private RequestResultRepository requestResultRepository;
 
@@ -65,7 +69,8 @@ public class RequestServiceTest {
       requestResultMapper,
       requestResultRepository,
       statusMatrix,
-      kafkaRequestMessageService
+      kafkaRequestMessageService,
+      requestMapper
     );
 
     var yandexResponse = RequestServiceTest.class.getResourceAsStream("/yandex-response.txt");

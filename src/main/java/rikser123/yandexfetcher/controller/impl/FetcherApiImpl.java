@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import rikser123.bundle.dto.request.RikserRequestItem;
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.yandexfetcher.controller.FetcherApi;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
-import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 import rikser123.yandexfetcher.service.YandexSearchService;
 
 

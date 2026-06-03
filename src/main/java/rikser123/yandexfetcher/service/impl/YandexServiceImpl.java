@@ -16,11 +16,13 @@ import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.utils.RikserResponseUtils;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
-import rikser123.yandexfetcher.dto.YandexRequestDto;
-import rikser123.yandexfetcher.dto.YandexResponseOperationDto;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
-import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
+import rikser123.yandexfetcher.dto.response.RequestResponseListDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseOperationDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.mapper.YandexMapper;
@@ -230,5 +232,16 @@ public class YandexServiceImpl implements YandexSearchService {
 
       return address;
     }).findFirst().orElse(null);
+  }
+
+  @Override
+  public RikserResponseItem<RequestResponseListDto> findAll(YandexRequestListDto dto) {
+    var data = requestService.findAll(dto);
+    var response = new RequestResponseListDto();
+    response.setRequestResponses(data.stream().toList());
+    response.setPageNumber(dto.getPageNumber());
+    response.setTotalElements(data.getTotalElements());
+
+    return RikserResponseUtils.createResponse(response);
   }
 }

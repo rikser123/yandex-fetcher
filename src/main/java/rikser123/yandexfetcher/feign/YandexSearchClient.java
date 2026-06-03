@@ -5,8 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import rikser123.yandexfetcher.dto.YandexRequestDto;
-import rikser123.yandexfetcher.dto.YandexResponseAsyncDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
 
 @FeignClient(
   name = "yandex-client",

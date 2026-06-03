@@ -29,7 +29,7 @@ import static org.mockserver.model.HttpResponse.response;
 @ActiveProfiles("integration-test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
-@WithMockUser(authorities = {"CHECK_SPELLS", "CREATE_REQUEST"})
+@WithMockUser(authorities = {"CHECK_SPELLS", "CREATE_REQUEST", "VIEW_REQUEST"})
 @EmbeddedKafka(
   topics = {"REQUEST"}
 )

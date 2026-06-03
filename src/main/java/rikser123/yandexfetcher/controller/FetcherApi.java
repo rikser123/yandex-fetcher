@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import rikser123.bundle.dto.request.RikserRequestItem;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
-import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 
 @Tag(name = "API для взаимодействия с яндексом")
 @ApiResponses(
@@ -33,5 +33,4 @@ public interface FetcherApi {
     RikserRequestItem<YandexSearchRequestDto> requestDto,
     HttpServletRequest httpServletRequest
   );
-
 }

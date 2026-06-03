@@ -1,4 +1,4 @@
-package rikser123.yandexfetcher.dto;
+package rikser123.yandexfetcher.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

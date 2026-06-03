@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

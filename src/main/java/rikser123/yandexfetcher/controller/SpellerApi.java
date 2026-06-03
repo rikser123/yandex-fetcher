@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.YandexSpellerResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexSpellerResponseDto;
 
 @Tag(name = "API для взаимодействия с сервисом проверки правописания")
 @ApiResponses(

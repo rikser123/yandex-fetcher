@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import rikser123.yandexfetcher.dto.YandexSpellerResponseItemDto;
+import rikser123.yandexfetcher.dto.response.YandexSpellerResponseItemDto;
 import rikser123.yandexfetcher.feign.YandexSpellerClient;
 import rikser123.yandexfetcher.service.impl.YandexSpellerServiceImpl;
 

@@ -3,15 +3,22 @@ package rikser123.yandexfetcher.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.exception.StatusChangeException;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
-import rikser123.yandexfetcher.dto.KafkaMessageRequestResultDto;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.KafkaMessageRequestResultDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
+import rikser123.yandexfetcher.dto.response.RequestResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.mapper.RequestMapper;
 import rikser123.yandexfetcher.mapper.RequestResultMapper;
 import rikser123.yandexfetcher.repository.RequestRepository;
 import rikser123.yandexfetcher.repository.RequestResultRepository;
@@ -20,6 +27,7 @@ import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
+import rikser123.yandexfetcher.repository.spec.YandexRequestListSpec;
 import rikser123.yandexfetcher.service.KafkaRequestMessageService;
 import rikser123.yandexfetcher.service.RequestService;
 
@@ -46,9 +54,27 @@ public class RequestServiceImpl implements RequestService {
   private final RequestResultRepository requestResultRepository;
   private final StatusMatrix<RequestStatus> requestStatusMatrix;
   private final KafkaRequestMessageService kafkaRequestMessageService;
+  private final RequestMapper requestMapper;
 
   private final static String PUNCTUATION_REGEX = "[!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~…—«»]";
   private final static int UNIQ_RATE = 10;
+
+  @Override
+  @Transactional
+  public Page<RequestResponseDto> findAll(YandexRequestListDto filter) {
+    var currentUser = (User) userDetailService.getCurrentUser();
+
+    var filterCriteria = new YandexRequestListSpec(filter, currentUser.getId());
+    var pageRequest = PageRequest.of(
+      filter.getPageNumber(),
+      filter.getItemsOnPage(),
+      Sort.by(Sort.Direction.ASC, StringUtils.defaultIfEmpty(filter.getSortBy(), "created"))
+    );
+    var result = requestRepository.findAll(filterCriteria, pageRequest);
+    var responses = result.get().map(requestMapper::mapToDto).toList();
+
+    return new PageImpl<>(responses, pageRequest, result.getTotalElements());
+  }
 
   @Transactional
   @Override

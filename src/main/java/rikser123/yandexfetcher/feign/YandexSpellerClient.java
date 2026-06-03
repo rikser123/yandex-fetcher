@@ -3,7 +3,7 @@ package rikser123.yandexfetcher.feign;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import rikser123.yandexfetcher.dto.YandexSpellerResponseItemDto;
+import rikser123.yandexfetcher.dto.response.YandexSpellerResponseItemDto;
 
 import java.util.List;
 

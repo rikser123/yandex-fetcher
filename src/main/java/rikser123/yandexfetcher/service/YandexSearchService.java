@@ -2,8 +2,10 @@ package rikser123.yandexfetcher.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.YandexSearchRequestDto;
-import rikser123.yandexfetcher.dto.YandexSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.response.RequestResponseListDto;
+import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 
 /**
  * Сервис для асинхронного поиска через Yandex Search API.
@@ -25,6 +27,14 @@ public interface YandexSearchService {
    */
   RikserResponseItem<YandexSearchResponseDto> search(
     YandexSearchRequestDto searchDto,
-    HttpServletRequest servletRequest)
-  ;
+    HttpServletRequest servletRequest);
+
+
+  /**
+   * Поиск записей пользователя
+   *
+   * @param dto Фильтры для поиска
+   * @return Ответ с запросами пользователя
+   */
+  RikserResponseItem<RequestResponseListDto> findAll(YandexRequestListDto dto);
 }

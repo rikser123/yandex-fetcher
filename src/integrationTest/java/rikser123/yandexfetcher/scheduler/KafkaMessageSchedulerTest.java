@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import rikser123.yandexfetcher.BaseConfig;
-import rikser123.yandexfetcher.dto.KafkaMessageRequestResultDto;
+import rikser123.yandexfetcher.dto.request.KafkaMessageRequestResultDto;
 import rikser123.yandexfetcher.repository.KafkaRequestMessageRepository;
 import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
 import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;

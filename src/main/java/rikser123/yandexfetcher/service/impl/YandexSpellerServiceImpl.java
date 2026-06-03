@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.bundle.utils.RikserResponseUtils;
-import rikser123.yandexfetcher.dto.YandexSpellerResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexSpellerResponseDto;
 import rikser123.yandexfetcher.feign.YandexSpellerClient;
 import rikser123.yandexfetcher.service.YandexSpellerService;
 

@@ -4,12 +4,12 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import rikser123.yandexfetcher.dto.YandexResponseXMLData;
+import rikser123.yandexfetcher.dto.response.RequestResultResponseDto;
+import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestResultStatus;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 @Mapper(componentModel = "spring")
@@ -17,6 +17,8 @@ public interface RequestResultMapper {
   @Mapping(source = "passages", target = "passages", ignore = true)
   @Mapping(source = "id", target = "id", ignore = true)
   RequestResult mapFromDto(YandexResponseXMLData.Doc dto);
+
+  RequestResultResponseDto mapToDto(RequestResult requestResult);
 
   @AfterMapping
   default void afterMappingDto(YandexResponseXMLData.Doc dto, @MappingTarget RequestResult entity) {
