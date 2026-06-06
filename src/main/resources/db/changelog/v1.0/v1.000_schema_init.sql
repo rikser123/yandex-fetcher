@@ -41,3 +41,14 @@ CREATE TABLE shedlock (
     locked_by VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE request_per_day_limit (
+   id UUID PRIMARY KEY,
+   user_id UUID NOT NULL,
+   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+   end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+   request_count INTEGER NOT NULL,
+   request_limit INTEGER NOT NULL,
+   created TIMESTAMP WITH TIME ZONE NOT NULL,
+   updated TIMESTAMP WITH TIME ZONE
+);
+

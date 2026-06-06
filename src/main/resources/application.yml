@@ -48,7 +48,7 @@ bundle:
     enabled: true
     service:
       enabled: true
-      url: http://security:8081
+      url: ${SECURITY_URL}
   redis:
     TTL: P1D
     prefix: yandex-query

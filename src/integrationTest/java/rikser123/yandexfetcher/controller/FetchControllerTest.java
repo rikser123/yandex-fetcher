@@ -64,6 +64,7 @@ public class FetchControllerTest extends BaseConfig {
 
    getYandexSearch();
    getOperationSearch();
+   getSecurityClientUserWithTarif(user.getId());
 
    when(userDetailService.getCurrentUser()).thenReturn(user);
 

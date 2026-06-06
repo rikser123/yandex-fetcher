@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.dto.response.RikserResponseItem;
@@ -29,7 +30,9 @@ import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.Ip2RegionService;
+import rikser123.yandexfetcher.service.RequestPerDayLimitService;
 import rikser123.yandexfetcher.service.RequestService;
+import rikser123.yandexfetcher.service.SecurityService;
 import rikser123.yandexfetcher.service.YandexSearchService;
 
 import java.util.Collection;
@@ -56,6 +59,8 @@ public class YandexServiceImpl implements YandexSearchService {
   private final YandexMapper yandexMapper;
   private final LanguageDetector languageDetector;
   private final Ip2RegionService ip2RegionService;
+  private final RequestPerDayLimitService requestPerDayLimitService;
+  private final SecurityService securityService;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -67,13 +72,21 @@ public class YandexServiceImpl implements YandexSearchService {
     YandexSearchRequestDto searchDto,
     HttpServletRequest servletRequest
   ) {
-    searchDto.setQueryText(searchDto.getQueryText().strip());
-
     var currentUser = (User) userDetailService.getCurrentUser();
+    var userTarifInfo = securityService.getUserTarif(currentUser.getId());
+
+    searchDto.setQueryText(searchDto.getQueryText().strip());
     var existedRequestOpt = requestService.findProcessingRequest(currentUser.getId(), searchDto.getQueryText());
 
     if (existedRequestOpt.isPresent()) {
       return createSearchResponse(existedRequestOpt.get());
+    }
+
+    try {
+      requestPerDayLimitService.checkLimit(currentUser.getId(), userTarifInfo.getRequestPerDay());
+    } catch (IllegalArgumentException ex) {
+      log.warn("Превышен лимит запросов по данному тарифу!", ex);
+      return RikserResponseUtils.createResponse("Превышен лимит запросов по данному тарифу!", HttpStatus.FORBIDDEN);
     }
 
     Optional<Request> existedQueryOpt = redisCacheService.get(searchDto.getQueryText(), Request.class);

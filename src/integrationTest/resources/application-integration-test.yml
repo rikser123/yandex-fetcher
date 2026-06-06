@@ -24,6 +24,7 @@ bundle:
     enabled: false
     service:
       enabled: false
+      url: http://localhost:8081
   redis:
     enabled: false
   kafka:

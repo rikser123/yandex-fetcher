@@ -21,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
@@ -83,6 +84,33 @@ public abstract class BaseConfig {
           .withStatusCode(200)
           .withHeader("Content-Type", "application/json")
           .withBody("{\"done\":true,\"response\":{\"rawData\":\"" + rawContent + "\"}}")
+      );
+  }
+
+  protected void getSecurityClientUserWithTarif(UUID userId) {
+    mockServer
+      .when(
+        request()
+          .withMethod("GET")
+          .withPath("/api/v1/user/get/" + userId.toString() + "/tarif")
+      )
+      .respond(
+        response()
+          .withStatusCode(200)
+          .withHeader("Content-Type", "application/json")
+          .withBody("""
+                    {
+                      "result": true,
+                      "data": {
+                        "tarif": {
+                          "id": "123e4567-e89b-12d3-a456-426614174001",
+                          "name": "Premium",
+                          "description": "Premium tariff with higher limits",
+                          "requestPerDay": 1000
+                        }
+                      }              
+                    }
+                    """)
       );
   }
 }

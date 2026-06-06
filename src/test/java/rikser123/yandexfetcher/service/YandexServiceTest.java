@@ -15,6 +15,7 @@ import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexResponse;
+import rikser123.yandexfetcher.dto.response.UserResponseTarifDto;
 import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
 import rikser123.yandexfetcher.dto.response.YandexResponseOperationDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
@@ -67,6 +68,12 @@ public class YandexServiceTest {
   @Mock
   private Ip2RegionService ip2RegionService;
 
+  @Mock
+  private RequestPerDayLimitService requestPerDayLimitService;
+
+  @Mock
+  private SecurityService securityService;
+
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
 
   private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
@@ -88,11 +95,20 @@ public class YandexServiceTest {
       userDetailService,
       yandexMapper,
       languageDetector,
-      ip2RegionService
+      ip2RegionService,
+      requestPerDayLimitService,
+      securityService
     );
 
     when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
     when(ip2RegionService.getCountryCode(any())).thenReturn("ru");
+
+    var tarifData = new UserResponseTarifDto();
+    var tarifInfo = new UserResponseTarifDto.UserTarifResponseDto();
+    tarifInfo.setRequestPerDay(50);
+    tarifData.setTarif(tarifInfo);
+
+    when(securityService.getUserTarif(any())).thenReturn(tarifData.getTarif());
   }
 
   @Test
