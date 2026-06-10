@@ -15,6 +15,7 @@ import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.bundle.service.RedisCacheService;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.utils.RikserResponseUtils;
+import rikser123.yandexfetcher.component.PrometheusMetrics;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.request.YandexRequestDto;
@@ -61,6 +62,7 @@ public class YandexServiceImpl implements YandexSearchService {
   private final Ip2RegionService ip2RegionService;
   private final RequestPerDayLimitService requestPerDayLimitService;
   private final SecurityService securityService;
+  private final PrometheusMetrics prometheusMetrics;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -82,15 +84,19 @@ public class YandexServiceImpl implements YandexSearchService {
       return createSearchResponse(existedRequestOpt.get());
     }
 
+    prometheusMetrics.incrementTotal();
+
     try {
       requestPerDayLimitService.checkLimit(currentUser.getId(), userTarifInfo.getRequestPerDay());
     } catch (IllegalArgumentException ex) {
+      prometheusMetrics.incrementFail();
       log.warn("Превышен лимит запросов по данному тарифу!", ex);
       return RikserResponseUtils.createResponse("Превышен лимит запросов по данному тарифу!", HttpStatus.FORBIDDEN);
     }
 
     Optional<Request> existedQueryOpt = redisCacheService.get(searchDto.getQueryText(), Request.class);
     if (existedQueryOpt.isPresent()) {
+      prometheusMetrics.incrementCache();
       var request = existedQueryOpt.get();
       return createSearchResponse(request);
     }
@@ -124,9 +130,11 @@ public class YandexServiceImpl implements YandexSearchService {
           log.info("successfully saved {}", result);
           requestService.changeStatus(request, RequestStatus.IN_PROCESSING);
           redisCacheService.put(searchDto.getQueryText(), request);
+          prometheusMetrics.incrementSuccess();
         } else if (!Objects.isNull(error)) {
           log.warn("error get operation with query {} {}", searchDto.getQueryText(), error);
           requestService.changeStatus(request, RequestStatus.FAILED);
+          prometheusMetrics.incrementFail();
         }
       });
 

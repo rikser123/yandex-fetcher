@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.service.RedisCacheService;
 import rikser123.bundle.service.UserDetailService;
+import rikser123.yandexfetcher.component.PrometheusMetrics;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexResponse;
@@ -74,6 +75,9 @@ public class YandexServiceTest {
   @Mock
   private SecurityService securityService;
 
+  @Mock
+  private PrometheusMetrics prometheusMetrics;
+
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
 
   private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
@@ -97,7 +101,8 @@ public class YandexServiceTest {
       languageDetector,
       ip2RegionService,
       requestPerDayLimitService,
-      securityService
+      securityService,
+      prometheusMetrics
     );
 
     when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
