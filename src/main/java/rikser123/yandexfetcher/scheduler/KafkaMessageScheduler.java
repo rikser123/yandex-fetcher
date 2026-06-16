@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.yandexfetcher.producer.KafkaRequestResultMessageProducer;
-import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
-import rikser123.yandexfetcher.service.KafkaRequestMessageService;
+import rikser123.yandexfetcher.service.RequestOutboxMessageService;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -16,14 +16,14 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class KafkaMessageScheduler {
   private final KafkaRequestResultMessageProducer kafkaProducer;
-  private final KafkaRequestMessageService kafkaRequestMessageService;
+  private final RequestOutboxMessageService requestOutboxMessageService;
 
   @Scheduled(fixedDelayString = "${kafka.scheduler-delay}")
   @SchedulerLock(name = "KafkaMessageScheduler", lockAtLeastFor = "3s", lockAtMostFor = "10s")
   public void schedule() {
     log.info("KafkaMessageScheduler started");
 
-    var createdMessages = kafkaRequestMessageService.findAllByStatus(KafkaEntityStatus.CREATED);
+    var createdMessages = requestOutboxMessageService.findAllByStatus(OutboxMessageStatus.CREATED);
 
     if (createdMessages.isEmpty()) {
       log.info("KafkaMessageScheduler finished, no messages");

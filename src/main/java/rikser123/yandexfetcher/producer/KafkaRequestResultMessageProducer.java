@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import rikser123.yandexfetcher.repository.entity.KafkaEntityStatus;
+import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;
-import rikser123.yandexfetcher.service.KafkaRequestMessageService;
+import rikser123.yandexfetcher.service.RequestOutboxMessageService;
+
 import static rikser123.yandexfetcher.config.KafkaTopicConfig.REQUEST_TOPIC;
 
 import java.util.Objects;
@@ -21,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class KafkaRequestResultMessageProducer {
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapper objectMapper;
-  private final KafkaRequestMessageService kafkaRequestMessageService;
+  private final RequestOutboxMessageService requestOutboxMessageService;
 
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(KafkaRequestMessage kafkaRequestMessage) {
@@ -31,7 +32,7 @@ public class KafkaRequestResultMessageProducer {
     return kafkaTemplate.send(REQUEST_TOPIC, message).whenComplete((result, error) -> {
       if (!Objects.isNull(result)) {
         log.info("message successfully send {}", kafkaRequestMessage.getId());
-        kafkaRequestMessageService.changeStatus(kafkaRequestMessage, KafkaEntityStatus.SENT);
+        requestOutboxMessageService.changeStatus(kafkaRequestMessage, OutboxMessageStatus.SENT);
       } else if (!Objects.isNull(error)) {
         log.warn("message fail send {}", kafkaRequestMessage.getId());
       }

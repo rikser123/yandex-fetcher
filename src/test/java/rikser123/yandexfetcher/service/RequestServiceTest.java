@@ -56,7 +56,7 @@ public class RequestServiceTest {
   private StatusMatrix<RequestStatus> statusMatrix= new StatusMatrixImpl<>();
 
   @Mock
-  private KafkaRequestMessageService kafkaRequestMessageService;
+  private RequestOutboxMessageService requestOutboxMessageService;
 
   @Autowired
   private YandexResponseXmlParser parser;
@@ -69,7 +69,7 @@ public class RequestServiceTest {
       requestResultMapper,
       requestResultRepository,
       statusMatrix,
-      kafkaRequestMessageService,
+      requestOutboxMessageService,
       requestMapper
     );
 

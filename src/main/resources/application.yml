@@ -58,6 +58,7 @@ bundle:
     user: ${KAFKA_USER}
     password: ${KAFKA_PASSWORD}
     kafkaUrl: ${KAFKA_URL}
+    max-fetch-limit: 200
 
 
 management:
@@ -82,7 +83,6 @@ yandex:
   delay: 500
 
 kafka:
-  max-fetch-limit: 200
   scheduler-delay: PT10S
 
 logbook:

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.exception.StatusChangeException;
+import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.dto.request.KafkaMessageRequestResultDto;
@@ -24,11 +25,12 @@ import rikser123.yandexfetcher.repository.RequestRepository;
 import rikser123.yandexfetcher.repository.RequestResultRepository;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
+import rikser123.yandexfetcher.repository.entity.KafkaRequestMessage;
 import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestResult;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.repository.spec.YandexRequestListSpec;
-import rikser123.yandexfetcher.service.KafkaRequestMessageService;
+import rikser123.yandexfetcher.service.RequestOutboxMessageService;
 import rikser123.yandexfetcher.service.RequestService;
 
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ public class RequestServiceImpl implements RequestService {
   private final RequestResultMapper requestResultMapper;
   private final RequestResultRepository requestResultRepository;
   private final StatusMatrix<RequestStatus> requestStatusMatrix;
-  private final KafkaRequestMessageService kafkaRequestMessageService;
+  private final RequestOutboxMessageService requestOutboxMessageService;
   private final RequestMapper requestMapper;
 
   private final static String PUNCTUATION_REGEX = "[!\"#$%&'()*+,\\-./:;<=>?@\\[\\]^_`{|}~…—«»]";
@@ -107,15 +109,19 @@ public class RequestServiceImpl implements RequestService {
 
     var savedResults = requestResultRepository.saveAll(uniqResults);
 
-    var kafkaDtos = savedResults.stream().map(result -> {
+    var kafkaMessages = savedResults.stream().map(result -> {
       var kafkaDto = new KafkaMessageRequestResultDto();
       kafkaDto.setUserId(request.getUserId());
       kafkaDto.setDomain(result.getDomain());
       kafkaDto.setRequestResultId(request.getId());
       kafkaDto.setUrl(result.getUrl());
-      return kafkaDto;
+
+      var kafkaRequestMessage = new KafkaRequestMessage();
+      kafkaRequestMessage.setDto(kafkaDto);
+      kafkaRequestMessage.setStatus(OutboxMessageStatus.CREATED);
+      return kafkaRequestMessage;
     }).toList();
-    kafkaRequestMessageService.saveAll(kafkaDtos);
+    requestOutboxMessageService.saveAll(kafkaMessages);
 
     return savedResults;
   }
