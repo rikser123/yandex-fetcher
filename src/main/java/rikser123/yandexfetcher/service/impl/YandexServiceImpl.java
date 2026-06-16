@@ -32,6 +32,7 @@ import rikser123.yandexfetcher.repository.entity.Request;
 import rikser123.yandexfetcher.repository.entity.RequestStatus;
 import rikser123.yandexfetcher.service.Ip2RegionService;
 import rikser123.yandexfetcher.service.RequestPerDayLimitService;
+import rikser123.yandexfetcher.service.RequestResultService;
 import rikser123.yandexfetcher.service.RequestService;
 import rikser123.yandexfetcher.service.SecurityService;
 import rikser123.yandexfetcher.service.YandexSearchService;
@@ -63,6 +64,7 @@ public class YandexServiceImpl implements YandexSearchService {
   private final RequestPerDayLimitService requestPerDayLimitService;
   private final SecurityService securityService;
   private final PrometheusMetrics prometheusMetrics;
+  private final RequestResultService requestResultService;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
   private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -123,7 +125,7 @@ public class YandexServiceImpl implements YandexSearchService {
         var data = result.getResponse().getRawData();
         var parsedResponse = xmlParser.parseRawResponse(data);
         var docs = getDocs(parsedResponse);
-        return requestService.saveRequestResults(docs, request);
+        return requestResultService.saveRequestResults(docs, request);
       })
       .whenComplete((result, error) -> {
         if (!Objects.isNull(result)) {

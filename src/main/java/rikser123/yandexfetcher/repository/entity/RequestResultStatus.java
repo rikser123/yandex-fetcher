@@ -4,5 +4,5 @@ public enum RequestResultStatus {
   CREATED,
   IN_PROCESSING,
   PROCESSED,
-  ERROR
+  FAILED
 }

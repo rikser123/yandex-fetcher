@@ -52,3 +52,13 @@ CREATE TABLE request_per_day_limit (
    updated TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE request_result_error (
+    id UUID PRIMARY KEY,
+    request_result_id UUID NOT NULL,
+    code VARCHAR(100),
+    message TEXT NOT NULL,
+    created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated TIMESTAMP WITHOUT TIME ZONE
+);
+
+

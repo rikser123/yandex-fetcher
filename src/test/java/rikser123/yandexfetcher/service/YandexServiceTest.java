@@ -78,6 +78,9 @@ public class YandexServiceTest {
   @Mock
   private PrometheusMetrics prometheusMetrics;
 
+  @Mock
+  private RequestResultService requestResultService;
+
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
 
   private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
@@ -102,7 +105,8 @@ public class YandexServiceTest {
       ip2RegionService,
       requestPerDayLimitService,
       securityService,
-      prometheusMetrics
+      prometheusMetrics,
+      requestResultService
     );
 
     when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
@@ -188,7 +192,7 @@ public class YandexServiceTest {
       .atMost(Duration.ofSeconds(5))
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
-        verify(requestService, times(1)).saveRequestResults(argThat(arg -> {
+        verify(requestResultService, times(1)).saveRequestResults(argThat(arg -> {
           assertThat(arg.size()).isEqualTo(10);
           return true;
         }), any());

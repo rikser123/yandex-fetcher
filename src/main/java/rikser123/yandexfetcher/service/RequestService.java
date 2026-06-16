@@ -39,18 +39,6 @@ public interface RequestService {
    */
   Request saveByYandexRequest(YandexSearchRequestDto dto);
 
-  /**
-   * Сохраняет результаты поиска, связанные с запросом.
-   * <p>
-   * Маппит DTO результатов в сущности, привязывает их к указанному запросу
-   * и сохраняет в БД.
-   * </p>
-   *
-   * @param docs    список DTO документов из ответа Yandex
-   * @param request сущность родительского запроса
-   * @return список сохранённых результатов
-   */
-  List<RequestResult> saveRequestResults(List<YandexResponseXMLData.Doc> docs, Request request);
 
   /**
    * Изменение статуса запроса>

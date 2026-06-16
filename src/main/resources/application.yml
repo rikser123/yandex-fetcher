@@ -27,6 +27,8 @@ spring:
       enabled: false
   kafka:
     bootstrap-servers: ${KAFKA_URL}
+    consumer:
+      group-id: fetcher
   data:
     redis:
       host: ${REDIS_URL}

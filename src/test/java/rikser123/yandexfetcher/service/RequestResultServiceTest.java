@@ -1,6 +1,5 @@
 package rikser123.yandexfetcher.service;
 
-import feign.ResponseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,17 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.bundle.service.StatusMatrix;
-import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.service.impl.StatusMatrixImpl;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
-import rikser123.yandexfetcher.mapper.RequestMapper;
 import rikser123.yandexfetcher.mapper.RequestResultMapper;
-import rikser123.yandexfetcher.repository.RequestRepository;
+import rikser123.yandexfetcher.repository.RequestResultErrorRepository;
 import rikser123.yandexfetcher.repository.RequestResultRepository;
 import rikser123.yandexfetcher.repository.entity.Request;
-import rikser123.yandexfetcher.repository.entity.RequestStatus;
-import rikser123.yandexfetcher.service.impl.RequestServiceImpl;
+import rikser123.yandexfetcher.repository.entity.RequestResultStatus;
+import rikser123.yandexfetcher.service.impl.RequestResultServiceImpl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,44 +33,38 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { YandexResponseXmlParser.class })
-public class RequestServiceTest {
-  private RequestService requestService;
+public class RequestResultServiceTest {
+  private RequestResultService requestResultService;
   private List<YandexResponseXMLData.Doc> docs;
 
-  @Mock
-  private RequestRepository requestRepository;
-
-  @Mock
-  private UserDetailService userDetailService;
-
   private RequestResultMapper requestResultMapper = Mappers.getMapper(RequestResultMapper.class);
-
-  private RequestMapper requestMapper = Mappers.getMapper(RequestMapper.class);
 
   @Mock
   private RequestResultRepository requestResultRepository;
 
-  private StatusMatrix<RequestStatus> statusMatrix= new StatusMatrixImpl<>();
+  private StatusMatrix<RequestResultStatus> statusMatrix= new StatusMatrixImpl<>();
 
   @Mock
   private RequestOutboxMessageService requestOutboxMessageService;
+
+  @Mock
+  private RequestResultErrorRepository requestResultErrorRepository;
 
   @Autowired
   private YandexResponseXmlParser parser;
 
   @BeforeEach
   void init() throws IOException {
-    requestService = new RequestServiceImpl(
-      requestRepository,
-      userDetailService,
+    requestResultService = new RequestResultServiceImpl(
       requestResultMapper,
       requestResultRepository,
       statusMatrix,
       requestOutboxMessageService,
-      requestMapper
+      requestResultErrorRepository
+
     );
 
-    var yandexResponse = RequestServiceTest.class.getResourceAsStream("/yandex-response.txt");
+    var yandexResponse = RequestResultServiceTest.class.getResourceAsStream("/yandex-response.txt");
     var text = new String(yandexResponse.readAllBytes(), StandardCharsets.UTF_8);
     var dto = parser.parseRawResponse(text);
 
@@ -92,7 +83,7 @@ public class RequestServiceTest {
   @Test
   void shouldSaveAllDocs() {
     var request = new Request();
-    requestService.saveRequestResults(docs, request);
+    requestResultService.saveRequestResults(docs, request);
 
     verify(requestResultRepository, times(1)).saveAll(argThat(arg -> {
       var argList = (List) arg;
@@ -110,7 +101,7 @@ public class RequestServiceTest {
     secondDoc.setDomain(firstDoc.getDomain());
     secondDoc.setPassages(firstDoc.getPassages());
 
-    requestService.saveRequestResults(docs, request);
+    requestResultService.saveRequestResults(docs, request);
     verify(requestResultRepository, times(1)).saveAll(argThat(arg -> {
       var argList = (List) arg;
       assertThat(argList.size()).isEqualTo(docs.size() - 1);
