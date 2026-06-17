@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import rikser123.bundle.dto.request.RikserRequestItem;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 
 @Tag(name = "API для взаимодействия с яндексом")
@@ -30,7 +30,7 @@ public interface FetcherApi {
   RikserResponseItem<YandexSearchResponseDto> search(
     @Parameter(description = "Параметры для поиска", required = true)
     @RequestBody
-    RikserRequestItem<YandexSearchRequestDto> requestDto,
+    RikserRequestItem<YandexSearchQueryDto> requestDto,
     HttpServletRequest httpServletRequest
   );
 }

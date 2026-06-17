@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
-import rikser123.yandexfetcher.dto.response.RequestResponseListDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
+import rikser123.yandexfetcher.dto.response.UserSearchQueryListDto;
 
 @Tag(name = "API для взаимодействия с яндексом")
 @ApiResponses(
@@ -23,8 +23,8 @@ public interface RequestsApi {
   @GetMapping
   @Operation(description = "Получение списка запросов пользователя")
   @PreAuthorize("hasAuthority('VIEW_REQUEST')")
-  RikserResponseItem<RequestResponseListDto> search(
+  RikserResponseItem<UserSearchQueryListDto> search(
     @ParameterObject()
-    YandexRequestListDto requestDto
+    YandexQueryListDto requestDto
   );
 }

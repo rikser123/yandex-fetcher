@@ -1,4 +1,4 @@
-CREATE TABLE request (
+CREATE TABLE user_search_query (
      id UUID PRIMARY KEY,
      user_id UUID NOT NULL,
      query_text VARCHAR(400) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE request (
      created TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE request_result (
+CREATE TABLE search_response (
     id UUID PRIMARY KEY,
     status VARCHAR(50) NOT NULL,
     saved_copy_url TEXT,
@@ -21,12 +21,12 @@ CREATE TABLE request_result (
     charset VARCHAR(50),
     mime_type VARCHAR(100),
     passages TEXT,
-    request_id UUID,
+    user_search_query_id UUID,
     created TIMESTAMP WITH TIME ZONE NOT NULL,
     updated TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE kafka_request_message (
+CREATE TABLE search_response_message (
     id UUID PRIMARY KEY,
     dto JSONB NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE shedlock (
     locked_by VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE request_per_day_limit (
+CREATE TABLE query_per_day_limit (
    id UUID PRIMARY KEY,
    user_id UUID NOT NULL,
    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -52,9 +52,9 @@ CREATE TABLE request_per_day_limit (
    updated TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE request_result_error (
+CREATE TABLE search_response_error (
     id UUID PRIMARY KEY,
-    request_result_id UUID NOT NULL,
+    search_response_error_id UUID NOT NULL,
     code VARCHAR(100),
     message TEXT NOT NULL,
     created TIMESTAMP WITHOUT TIME ZONE NOT NULL,

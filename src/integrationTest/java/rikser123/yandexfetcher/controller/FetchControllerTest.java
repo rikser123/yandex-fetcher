@@ -11,13 +11,13 @@ import rikser123.bundle.dto.User;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.BaseConfig;
 import rikser123.yandexfetcher.IntegrationUtils;
-import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
-import rikser123.yandexfetcher.repository.RequestRepository;
-import rikser123.yandexfetcher.repository.RequestResultRepository;
-import rikser123.yandexfetcher.repository.entity.Request;
-import rikser123.yandexfetcher.repository.entity.RequestResult;
-import rikser123.yandexfetcher.repository.entity.RequestResultStatus;
-import rikser123.yandexfetcher.repository.entity.RequestStatus;
+import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
+import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
+import rikser123.yandexfetcher.repository.SearchResponseRepository;
+import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
+import rikser123.yandexfetcher.repository.entity.SearchResponse;
+import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
+import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
 import java.time.Duration;
 import java.util.Set;
@@ -33,10 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class FetchControllerTest extends BaseConfig {
   @Autowired
-  private RequestRepository requestRepository;
+  private UserSearchQueryRepository userSearchQueryRepository;
 
   @Autowired
-  private RequestResultRepository requestResultRepository;
+  private SearchResponseRepository searchResponseRepository;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -49,14 +49,14 @@ public class FetchControllerTest extends BaseConfig {
 
   @BeforeEach
   void cleanUp() {
-    requestRepository.deleteAllInBatch();
-    requestResultRepository.deleteAllInBatch();
+    userSearchQueryRepository.deleteAllInBatch();
+    searchResponseRepository.deleteAllInBatch();
   }
 
 
   @Test
   void fetchData() throws Exception {
-   var searchDto = new YandexSearchRequestDto();
+   var searchDto = new YandexSearchQueryDto();
    searchDto.setQueryText("text");
    var user = new User();
    user.setPrivileges(Set.of("CREATE_REQUEST", "CHECK_SPELLS"));
@@ -73,20 +73,20 @@ public class FetchControllerTest extends BaseConfig {
       .content(objectMapper.writeValueAsString(IntegrationUtils.buildRequest(searchDto))))
     .andExpect(status().isOk())
     .andExpect(jsonPath("$.result").value(true))
-    .andExpect(jsonPath("$.data.requestId").isNotEmpty());
+    .andExpect(jsonPath("$.data.queryId").isNotEmpty());
 
     await()
       .atMost(Duration.ofSeconds(5))
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
-        assertThat(requestResultRepository.findAll().size()).isEqualTo(10);
-        var allRequests = requestRepository.findAll();
-        assertThat(allRequests.getFirst().getStatus()).isEqualTo(RequestStatus.IN_PROCESSING);
+        assertThat(searchResponseRepository.findAll().size()).isEqualTo(10);
+        var allRequests = userSearchQueryRepository.findAll();
+        assertThat(allRequests.getFirst().getStatus()).isEqualTo(UserSearchQueryStatus.IN_PROCESSING);
       });
   }
 
   @Test
-  void findRequests() throws Exception {
+  void findQueries() throws Exception {
     var user = new User();
     user.setPrivileges(Set.of("CREATE_REQUEST", "CHECK_SPELLS", "VIEW_REQUEST"));
     user.setId(UUID.randomUUID());
@@ -101,25 +101,25 @@ public class FetchControllerTest extends BaseConfig {
        )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.result").value(true))
-      .andExpect(jsonPath("$.data.requestResponses[0].id").value(request.getId().toString()))
-      .andExpect(jsonPath("$.data.requestResponses[0].userId").value(user.getId().toString()))
-      .andExpect(jsonPath("$.data.requestResponses[0].requestResults").isNotEmpty());
+      .andExpect(jsonPath("$.data.searchQueries[0].id").value(request.getId().toString()))
+      .andExpect(jsonPath("$.data.searchQueries[0].userId").value(user.getId().toString()))
+      .andExpect(jsonPath("$.data.searchQueries[0].responses").isNotEmpty());
   }
 
-  private Request createRequest(UUID userId) {
-    var request = new Request();
+  private UserSearchQuery createRequest(UUID userId) {
+    var request = new UserSearchQuery();
     request.setUserId(userId);
     request.setQueryText("queryText");
-    request.setStatus(RequestStatus.CREATED);
+    request.setStatus(UserSearchQueryStatus.CREATED);
 
-    var requestResult = new RequestResult();
-    requestResult.setStatus(RequestResultStatus.CREATED);
+    var requestResult = new SearchResponse();
+    requestResult.setStatus(SearchResponseStatus.CREATED);
     requestResult.setUrl("url");
     requestResult.setDomain("domain");
     requestResult.setTitle("title");
-    request.getRequestResults().add(requestResult);
-    requestResult.setRequest(request);
+    request.getResponses().add(requestResult);
+    requestResult.setUserSearchQuery(request);
 
-    return requestRepository.save(request);
+    return userSearchQueryRepository.save(request);
   }
 }

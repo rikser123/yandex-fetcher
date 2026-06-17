@@ -13,5 +13,5 @@ import java.util.UUID;
 @Schema(description = "Параметры ответа на создание запроса")
 public class YandexSearchResponseDto {
   @Schema(description = "Id запроса на поиск")
-  private UUID requestId;
+  private UUID queryId;
 }

@@ -4,8 +4,8 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import rikser123.yandexfetcher.dto.request.YandexRequestDto;
-import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 
 @Mapper(componentModel = "spring")
 public interface YandexMapper {
@@ -14,11 +14,11 @@ public interface YandexMapper {
   @Mapping(source = "groupsOnPage", target = "groupSpec.groupsOnPage")
   @Mapping(source = "sortMode", target = "sortSpec.sortMode")
   @Mapping(source = "sortOrder", target = "sortSpec.sortOrder")
-  YandexRequestDto mapToRequestDto(YandexSearchRequestDto dto);
+  YandexQueryDto mapToRequestDto(YandexSearchQueryDto dto);
 
   @AfterMapping
-  default void afterMapToRequestDto(YandexSearchRequestDto dto, @MappingTarget YandexRequestDto requestDto) {
-    requestDto.setResponseFormat(YandexRequestDto.ResponseFormat.FORMAT_XML);
-    requestDto.getQuery().setSearchType(YandexRequestDto.SearchType.SEARCH_TYPE_RU);
+  default void afterMapToRequestDto(YandexSearchQueryDto dto, @MappingTarget YandexQueryDto requestDto) {
+    requestDto.setResponseFormat(YandexQueryDto.ResponseFormat.FORMAT_XML);
+    requestDto.getQuery().setSearchType(YandexQueryDto.SearchType.SEARCH_TYPE_RU);
   }
 }

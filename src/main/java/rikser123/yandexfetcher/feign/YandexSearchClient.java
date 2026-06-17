@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import rikser123.yandexfetcher.dto.request.YandexRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
 
 @FeignClient(
@@ -15,7 +15,7 @@ import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
 public interface YandexSearchClient {
   @PostMapping("/v2/web/searchAsync")
   YandexResponseAsyncDto search(
-    @RequestBody @Valid YandexRequestDto searchDto,
+    @RequestBody @Valid YandexQueryDto searchDto,
     @RequestHeader("Authorization") String authorization
   );
 }

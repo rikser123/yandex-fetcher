@@ -2,9 +2,9 @@ package rikser123.yandexfetcher.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.yandexfetcher.dto.request.YandexRequestListDto;
-import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
-import rikser123.yandexfetcher.dto.response.RequestResponseListDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
+import rikser123.yandexfetcher.dto.response.UserSearchQueryListDto;
 import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 
 /**
@@ -26,7 +26,7 @@ public interface YandexSearchService {
    * @return объект с ID запроса для последующего отслеживания статуса
    */
   RikserResponseItem<YandexSearchResponseDto> search(
-    YandexSearchRequestDto searchDto,
+    YandexSearchQueryDto searchDto,
     HttpServletRequest servletRequest);
 
 
@@ -36,5 +36,5 @@ public interface YandexSearchService {
    * @param dto Фильтры для поиска
    * @return Ответ с запросами пользователя
    */
-  RikserResponseItem<RequestResponseListDto> findAll(YandexRequestListDto dto);
+  RikserResponseItem<UserSearchQueryListDto> findAll(YandexQueryListDto dto);
 }

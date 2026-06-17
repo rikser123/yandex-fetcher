@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import rikser123.bundle.dto.request.RikserRequestItem;
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.yandexfetcher.controller.FetcherApi;
-import rikser123.yandexfetcher.dto.request.YandexSearchRequestDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 import rikser123.yandexfetcher.service.YandexSearchService;
 
@@ -27,7 +27,7 @@ public class FetcherApiImpl implements FetcherApi {
   public RikserResponseItem<YandexSearchResponseDto> search(
     @RequestBody
     @Valid
-    RikserRequestItem<YandexSearchRequestDto> requestDto,
+    RikserRequestItem<YandexSearchQueryDto> requestDto,
     HttpServletRequest httpServletRequest
   ) {
     return yandexService.search(requestDto.getData(), httpServletRequest);

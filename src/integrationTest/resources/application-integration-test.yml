@@ -28,7 +28,8 @@ bundle:
   redis:
     enabled: false
   kafka:
-    kafkaUrl: http://localhost:8081
+    enabled: false
+    kafkaUrl: http://localhost:9092
     user: user
     password: password
 
