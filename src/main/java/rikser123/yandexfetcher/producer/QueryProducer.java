@@ -9,7 +9,9 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.yandexfetcher.repository.entity.SearchResponseMessage;
+import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
 import rikser123.yandexfetcher.service.SearchResponseOutboxService;
+import rikser123.yandexfetcher.service.SearchResponseService;
 
 import static rikser123.yandexfetcher.config.KafkaTopicConfig.QUERY_TOPIC;
 
@@ -23,6 +25,7 @@ public class QueryProducer {
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapper objectMapper;
   private final SearchResponseOutboxService requestOutboxMessageService;
+  private final SearchResponseService responseService;
 
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(SearchResponseMessage kafkaRequestMessage) {
@@ -33,6 +36,8 @@ public class QueryProducer {
       if (!Objects.isNull(result)) {
         log.info("message successfully send {}", kafkaRequestMessage.getId());
         requestOutboxMessageService.changeStatus(kafkaRequestMessage, OutboxMessageStatus.SENT);
+        var currentResponse = responseService.findById(dto.getSearchResponseId());
+        responseService.changeStatus(currentResponse, SearchResponseStatus.IN_PROCESSING);
       } else if (!Objects.isNull(error)) {
         log.warn("message fail send {}", kafkaRequestMessage.getId());
       }
