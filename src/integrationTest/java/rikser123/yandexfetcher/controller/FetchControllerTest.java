@@ -81,7 +81,7 @@ public class FetchControllerTest extends BaseConfig {
       .untilAsserted(() -> {
         assertThat(searchResponseRepository.findAll().size()).isEqualTo(10);
         var allRequests = userSearchQueryRepository.findAll();
-        assertThat(allRequests.getFirst().getStatus()).isEqualTo(UserSearchQueryStatus.IN_PROCESSING);
+        assertThat(allRequests.getFirst().getStatus()).isEqualTo(UserSearchQueryStatus.CREATED);
       });
   }
 

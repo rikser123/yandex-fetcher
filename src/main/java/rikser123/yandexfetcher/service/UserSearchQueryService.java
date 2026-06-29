@@ -15,6 +15,13 @@ import java.util.UUID;
  * Сервис для управления запросами и результатами поиска.
  */
 public interface UserSearchQueryService {
+  /**
+   * Поиск запроса пользователя по id.
+   *
+   * @param id id сущности
+   * @return сохранённый запрос с присвоенным ID
+   */
+  UserSearchQuery findById(UUID id);
 
   /**
    * Сохраняет запрос в БД.

@@ -48,6 +48,11 @@ public class SearchResponseServiceImpl implements SearchResponseService {
   private final static int UNIQ_RATE = 10;
 
   @Override
+  public List<SearchResponse> findAllByIds(List<UUID> ids) {
+    return searchResponseRepository.findAllByIdIn(ids);
+  }
+
+  @Override
   public SearchResponseError saveSearchResponseError(SearchResponseError error) {
     return searchResponseErrorRepository.save(error);
   }
@@ -68,20 +73,22 @@ public class SearchResponseServiceImpl implements SearchResponseService {
     var uniqResults = getOnlyUniqueResults(results);
 
     var savedResults = searchResponseRepository.saveAll(uniqResults);
+    var kafkaDto = new MessageSearchResponseDto();
+    kafkaDto.setSearchQueryId(userSearchQuery.getId());
+    kafkaDto.setUserId(userSearchQuery.getUserId());
 
-    var kafkaMessages = savedResults.stream().map(result -> {
-      var kafkaDto = new MessageSearchResponseDto();
-      kafkaDto.setUserId(userSearchQuery.getUserId());
-      kafkaDto.setDomain(result.getDomain());
-      kafkaDto.setSearchResponseId(result.getId());
-      kafkaDto.setUrl(result.getUrl());
+    savedResults.stream().forEach(searchResponse -> {
+      var kafkaDtoResponse = new MessageSearchResponseDto.SearchResponse();
+      kafkaDtoResponse.setDomain(searchResponse.getDomain());
+      kafkaDtoResponse.setSearchResponseId(searchResponse.getId());
+      kafkaDtoResponse.setUrl(searchResponse.getUrl());
+      kafkaDto.getSearchResponses().add(kafkaDtoResponse);
+    });
 
-      var kafkaRequestMessage = new SearchResponseMessage();
-      kafkaRequestMessage.setDto(kafkaDto);
-      kafkaRequestMessage.setStatus(OutboxMessageStatus.CREATED);
-      return kafkaRequestMessage;
-    }).toList();
-    searchResponseMessageService.saveAll(kafkaMessages);
+    var kafkaRequestMessage = new SearchResponseMessage();
+    kafkaRequestMessage.setDto(kafkaDto);
+    kafkaRequestMessage.setStatus(OutboxMessageStatus.CREATED);
+    searchResponseMessageService.save(kafkaRequestMessage);
 
     return savedResults;
   }

@@ -130,7 +130,6 @@ public class YandexServiceImpl implements YandexSearchService {
       .whenComplete((result, error) -> {
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
-          userSearchQueryService.changeStatus(request, UserSearchQueryStatus.IN_PROCESSING);
           redisCacheService.put(searchDto.getQueryText(), request);
           prometheusMetrics.incrementSuccess();
         } else if (!Objects.isNull(error)) {

@@ -13,6 +13,13 @@ import java.util.UUID;
  * Сервис для управления результатами запросов
  */
 public interface SearchResponseService {
+  /**
+   * Найди всех по айди
+   *
+   * @param ids список айди запросов
+   * @return сохраненные результаты
+   */
+  List<SearchResponse> findAllByIds(List<UUID> ids);
 
   /**
    * Сохранить результаты запроса

@@ -1,5 +1,6 @@
 package rikser123.yandexfetcher.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,12 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   private final UserDetailService userDetailService;
   private final StatusMatrix<UserSearchQueryStatus> requestStatusMatrix;
   private final UserSearchQueryMapper requestMapper;
+
+  @Transactional
+  public UserSearchQuery findById(UUID id) {
+    return userSearchQueryRepository.findById(id)
+      .orElseThrow(() -> new EntityNotFoundException("Не найден запрос пользователя с id " + id));
+  }
 
   @Override
   @Transactional
