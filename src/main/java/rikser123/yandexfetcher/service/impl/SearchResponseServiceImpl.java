@@ -76,6 +76,7 @@ public class SearchResponseServiceImpl implements SearchResponseService {
     var kafkaDto = new MessageSearchResponseDto();
     kafkaDto.setSearchQueryId(userSearchQuery.getId());
     kafkaDto.setUserId(userSearchQuery.getUserId());
+    kafkaDto.setQueryText(userSearchQuery.getQueryText());
 
     savedResults.stream().forEach(searchResponse -> {
       var kafkaDtoResponse = new MessageSearchResponseDto.SearchResponse();

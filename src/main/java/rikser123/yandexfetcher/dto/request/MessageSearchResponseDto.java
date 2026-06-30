@@ -15,6 +15,7 @@ public class MessageSearchResponseDto {
   private UUID searchQueryId;
   private List<SearchResponse> searchResponses = new ArrayList<>();
   private UUID userId;
+  private String queryText;
 
   @Data
   @AllArgsConstructor
