@@ -10,7 +10,7 @@ import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
 
 @FeignClient(
   name = "yandex-client",
-  url = "${yandex.searchApiUrl}"
+  url = "${yandex.search-api-url}"
 )
 public interface YandexSearchClient {
   @PostMapping("/v2/web/searchAsync")

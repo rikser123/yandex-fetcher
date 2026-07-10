@@ -9,7 +9,7 @@ import java.util.List;
 
 @FeignClient(
   name = "yandex-speller-client",
-  url = "${yandex.spellerApi}"
+  url = "${yandex.speller-api}"
 )
 public interface YandexSpellerClient {
   @GetMapping("/services/spellservice.json/checkText")

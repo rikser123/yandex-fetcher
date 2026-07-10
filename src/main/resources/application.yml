@@ -78,12 +78,13 @@ management:
 
 yandex:
   token: ${YANDEX_TOKEN}
-  searchApiUrl: ${YANDEX_SEARCH_API_URL}
-  operationApiUrl: ${YANDEX_OPERATION_API_URL}
-  spellerApi: ${YANDEX_SPELLER_API_URL}
-  maxAttempts: 4
+  search-api-url: ${YANDEX_SEARCH_API_URL}
+  operation-api-url: ${YANDEX_OPERATION_API_URL}
+  speller-api: ${YANDEX_SPELLER_API_URL}
+  max-attempts: 4
   delay: 500
-  exclude_domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
+  exclude-domains: ${EXCLUDE_DOMAINS:vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru}
+  pool-queue-size: ${YANDEX_POOL_QUEUE_SISE:300}
 
 kafka:
   scheduler-delay: PT10S

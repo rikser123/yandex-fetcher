@@ -4,6 +4,8 @@ import com.optimaize.langdetect.LanguageDetector;
 import com.optimaize.langdetect.i18n.LdLocale;
 import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObjectFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +44,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 @Service
@@ -67,9 +74,43 @@ public class YandexServiceImpl implements YandexSearchService {
   private final SearchResponseService searchResponseService;
 
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
-  private static final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private static final String API_KEY = "Api-Key";
   private static final String DEFAULT_LANGUAGE = "ru";
+
+  private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+  private Semaphore semaphore;
+  private BlockingQueue<YandexQueueItem> requestsQueue = new LinkedBlockingQueue<>();
+
+  @PostConstruct
+  void init() {
+    var queueSize = yandexProperties.getPoolQueueSize();
+    semaphore = new Semaphore(queueSize);
+
+    executor.execute(() -> {
+      while (true) {
+        try {
+          var request = requestsQueue.take();
+          fetchYandexList(request);
+        } catch (InterruptedException exception) {
+          Thread.currentThread().interrupt();
+          break;
+        }
+      }
+    });
+  }
+
+  @PreDestroy
+  void shutdown() {
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException exception) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
+  }
 
   @Override
   public RikserResponseItem<YandexSearchResponseDto> search(
@@ -114,12 +155,35 @@ public class YandexServiceImpl implements YandexSearchService {
     var userAgent = servletRequest.getHeader("User-Agent");
     requestDto.setUserAgent(userAgent);
 
-    var authHeader = API_KEY + " " + yandexProperties.getToken();
     var request = userSearchQueryService.saveByYandexRequest(searchDto);
+    initProcessing(new YandexQueueItem(requestDto, searchDto.getQueryText(), request));
+
+   return createSearchResponse(request);
+  }
+
+  private void initProcessing(YandexQueueItem queueItem) {
+    requestsQueue.add(queueItem);
+  }
+
+  private void fetchYandexList(YandexQueueItem queueItem) throws InterruptedException {
+    var authHeader = API_KEY + " " + yandexProperties.getToken();
     var currentAttempts = 0;
+    var requestDto = queueItem.yandexRequestDto();
+    var request = queueItem.userQuery();
+    var queryText = queueItem.queryText();
+    var acquired = new AtomicBoolean(false);
 
     CompletableFuture
-      .supplyAsync(() -> getOperationId(requestDto, authHeader, currentAttempts), executor)
+      .supplyAsync(() -> {
+        try {
+          semaphore.acquire();
+          acquired.set(true);
+        } catch (InterruptedException exception) {
+          Thread.currentThread().interrupt();
+          throw new RuntimeException("Поток заблокирован");
+        }
+        return getOperationId(requestDto, authHeader, currentAttempts);
+      }, executor)
       .thenApply(operationId -> getSearchResults(operationId, authHeader, currentAttempts))
       .thenApply(result -> {
         var data = result.getResponse().getRawData();
@@ -131,18 +195,20 @@ public class YandexServiceImpl implements YandexSearchService {
         return searchResponseService.saveSearchResponses(docs, request);
       })
       .whenComplete((result, error) -> {
+        if (acquired.get()) {
+          semaphore.release();
+        }
+
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
-          redisCacheService.put(searchDto.getQueryText(), request);
+          redisCacheService.put(queryText, request);
           prometheusMetrics.incrementSuccess();
         } else if (!Objects.isNull(error)) {
-          log.warn("error get operation with query {} {}", searchDto.getQueryText(), error);
+          log.warn("error get operation with query {} {}", queryText, error);
           userSearchQueryService.changeStatus(request, UserSearchQueryStatus.FAILED);
           prometheusMetrics.incrementFail();
         }
       });
-
-   return createSearchResponse(request);
   }
 
   private String getOperationId(YandexQueryDto searchDto, String authHeader, int attempts) {
@@ -267,5 +333,12 @@ public class YandexServiceImpl implements YandexSearchService {
     response.setTotalElements(data.getTotalElements());
 
     return RikserResponseUtils.createResponse(response);
+  }
+
+  private record YandexQueueItem(
+    YandexQueryDto yandexRequestDto,
+    String queryText,
+    UserSearchQuery userQuery
+  ) {
   }
 }

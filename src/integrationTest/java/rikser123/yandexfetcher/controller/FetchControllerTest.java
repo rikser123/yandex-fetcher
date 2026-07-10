@@ -53,7 +53,6 @@ public class FetchControllerTest extends BaseConfig {
     searchResponseRepository.deleteAllInBatch();
   }
 
-
   @Test
   void fetchData() throws Exception {
    var searchDto = new YandexSearchQueryDto();
@@ -79,7 +78,7 @@ public class FetchControllerTest extends BaseConfig {
       .atMost(Duration.ofSeconds(5))
       .pollInterval(Duration.ofMillis(500))
       .untilAsserted(() -> {
-        assertThat(searchResponseRepository.findAll().size()).isEqualTo(10);
+        assertThat(searchResponseRepository.findAll().size()).isEqualTo(9);
         var allRequests = userSearchQueryRepository.findAll();
         assertThat(allRequests.getFirst().getStatus()).isEqualTo(UserSearchQueryStatus.CREATED);
       });

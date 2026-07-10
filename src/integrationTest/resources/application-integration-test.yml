@@ -38,12 +38,13 @@ logbook:
 
 yandex:
   token: token
-  searchApiUrl: http://localhost:8081
-  operationApiUrl: http://localhost:8081
-  spellerApi: http://localhost:8081
-  maxAttempts: 4
-  delay: 500,
-  exclude_domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
+  search-api-url: http://localhost:8081
+  operation-api-url: http://localhost:8081
+  speller-api: http://localhost:8081
+  max-attempts: 4
+  delay: 500
+  exclude-domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
+  pool-queue-size: 100
 
 kafka:
   max-fetch-limit: 200

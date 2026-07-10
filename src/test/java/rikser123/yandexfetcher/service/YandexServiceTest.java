@@ -31,6 +31,7 @@ import rikser123.yandexfetcher.service.impl.YandexServiceImpl;
 import static org.awaitility.Awaitility.await;
 import com.optimaize.langdetect.i18n.LdLocale;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
@@ -90,12 +91,13 @@ public class YandexServiceTest {
   private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
 
   @BeforeEach
-  void init() {
+  void init() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     yandexProperties = new YandexProperties();
     yandexProperties.setDelay(500);
     yandexProperties.setToken("token");
     yandexProperties.setMaxAttempts(4);
     yandexProperties.setExcludeDomains(Collections.emptyList());
+    yandexProperties.setPoolQueueSize(10);
 
     yandexService = new YandexServiceImpl(
       yandexSearchClient,
@@ -114,7 +116,12 @@ public class YandexServiceTest {
       searchResponseService
     );
 
-    when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of((LdLocale.fromString("ru"))));
+    var init = YandexServiceImpl.class.getDeclaredMethod("init");
+    init.setAccessible(true);
+    init.invoke(yandexService);
+    init.setAccessible(false);
+
+    when(languageDetector.detect(any(CharSequence.class))).thenReturn(com.google.common.base.Optional.of(LdLocale.fromString("ru")));
     when(ip2RegionService.getCountryCode(any())).thenReturn("ru");
 
     var tarifData = new UserResponseTarifDto();

@@ -14,4 +14,5 @@ public class YandexProperties {
   private int maxAttempts;
   private int delay;
   private List<String> excludeDomains;
+  private int poolQueueSize;
 }

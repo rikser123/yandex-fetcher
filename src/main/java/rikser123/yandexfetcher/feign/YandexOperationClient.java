@@ -8,7 +8,7 @@ import rikser123.yandexfetcher.dto.response.YandexResponseOperationDto;
 
 @FeignClient(
   name = "yandex-client",
-  url = "${yandex.operationApiUrl}"
+  url = "${yandex.operation-api-url}"
 )
 public interface YandexOperationClient {
   @GetMapping("/operations/{id}")
