@@ -83,6 +83,7 @@ yandex:
   spellerApi: ${YANDEX_SPELLER_API_URL}
   maxAttempts: 4
   delay: 500
+  exclude_domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
 
 kafka:
   scheduler-delay: PT10S

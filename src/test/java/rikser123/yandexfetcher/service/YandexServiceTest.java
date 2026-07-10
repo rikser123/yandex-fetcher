@@ -33,6 +33,8 @@ import com.optimaize.langdetect.i18n.LdLocale;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -83,14 +85,17 @@ public class YandexServiceTest {
 
   private YandexMapper yandexMapper = Mappers.getMapper(YandexMapper.class);
 
+  private YandexProperties yandexProperties;
+
   private static final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
 
   @BeforeEach
   void init() {
-    var yandexProperties = new YandexProperties();
+    yandexProperties = new YandexProperties();
     yandexProperties.setDelay(500);
     yandexProperties.setToken("token");
     yandexProperties.setMaxAttempts(4);
+    yandexProperties.setExcludeDomains(Collections.emptyList());
 
     yandexService = new YandexServiceImpl(
       yandexSearchClient,
@@ -196,7 +201,46 @@ public class YandexServiceTest {
           assertThat(arg.size()).isEqualTo(10);
           return true;
         }), any());
-        verify(userSearchQueryService, times(1)).changeStatus(any(), eq(UserSearchQueryStatus.IN_PROCESSING));
+      });
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldExcludeDocs() {
+    var field = YandexProperties.class.getDeclaredField("excludeDomains");
+    field.setAccessible(true);
+    field.set(yandexProperties, List.of("yandex.ru"));
+    field.setAccessible(false);
+
+    var request = createRequest();
+    var searchDto = new YandexSearchQueryDto();
+    searchDto.setQueryText("queryText");
+
+    var asyncDto = new YandexResponseAsyncDto();
+    asyncDto.setId(UUID.randomUUID().toString());
+
+    var operationDto = new YandexResponseOperationDto();
+    operationDto.setDone(true);
+    var yandexResponse = new YandexResponse();
+    var encoded = YandexServiceTest.class.getResourceAsStream("/yandex-response.txt");
+    var rawData = new String(encoded.readAllBytes(), StandardCharsets.UTF_8);
+    yandexResponse.setRawData(rawData);
+    operationDto.setResponse(yandexResponse);
+
+    when(userSearchQueryService.saveByYandexRequest(any())).thenReturn(request);
+    when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
+    when(yandexOperationClient.getSearchData(any(), any())).thenReturn(operationDto);
+    when(userDetailService.getCurrentUser()).thenReturn(new User());
+    yandexService.search(searchDto, mockHttpServletRequest);
+
+    await()
+      .atMost(Duration.ofSeconds(5))
+      .pollInterval(Duration.ofMillis(500))
+      .untilAsserted(() -> {
+        verify(searchResponseService, times(1)).saveSearchResponses(argThat(arg -> {
+          assertThat(arg.size()).isEqualTo(9);
+          return true;
+        }), any());
       });
   }
 

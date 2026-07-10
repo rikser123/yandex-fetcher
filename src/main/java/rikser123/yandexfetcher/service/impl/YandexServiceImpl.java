@@ -124,7 +124,10 @@ public class YandexServiceImpl implements YandexSearchService {
       .thenApply(result -> {
         var data = result.getResponse().getRawData();
         var parsedResponse = xmlParser.parseRawResponse(data);
-        var docs = getDocs(parsedResponse);
+        var docs = getDocs(parsedResponse)
+          .stream()
+          .filter(doc -> !yandexProperties.getExcludeDomains().contains(doc.getDomain()))
+          .toList();
         return searchResponseService.saveSearchResponses(docs, request);
       })
       .whenComplete((result, error) -> {

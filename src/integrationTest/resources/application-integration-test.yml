@@ -42,7 +42,8 @@ yandex:
   operationApiUrl: http://localhost:8081
   spellerApi: http://localhost:8081
   maxAttempts: 4
-  delay: 500
+  delay: 500,
+  exclude_domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
 
 kafka:
   max-fetch-limit: 200
