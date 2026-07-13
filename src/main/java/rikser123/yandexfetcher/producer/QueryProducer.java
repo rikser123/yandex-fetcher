@@ -11,10 +11,8 @@ import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.yandexfetcher.dto.request.MessageSearchResponseDto;
 import rikser123.yandexfetcher.repository.entity.SearchResponseMessage;
 import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
-import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 import rikser123.yandexfetcher.service.SearchResponseOutboxService;
 import rikser123.yandexfetcher.service.SearchResponseService;
-import rikser123.yandexfetcher.service.UserSearchQueryService;
 
 import static rikser123.yandexfetcher.config.KafkaTopicConfig.QUERY_TOPIC;
 
@@ -29,7 +27,6 @@ public class QueryProducer {
   private final ObjectMapper objectMapper;
   private final SearchResponseOutboxService requestOutboxMessageService;
   private final SearchResponseService responseService;
-  private final UserSearchQueryService userSearchQueryService;
 
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(SearchResponseMessage kafkaRequestMessage) {
@@ -40,8 +37,6 @@ public class QueryProducer {
       if (!Objects.isNull(result)) {
         log.info("message successfully send {}", kafkaRequestMessage.getId());
         requestOutboxMessageService.changeStatus(kafkaRequestMessage, OutboxMessageStatus.SENT);
-        var currentQuery = userSearchQueryService.findById(dto.getSearchQueryId());
-        userSearchQueryService.changeStatus(currentQuery, UserSearchQueryStatus.IN_PROCESSING);
 
         var responseIds = dto.getSearchResponses()
           .stream()

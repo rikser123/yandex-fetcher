@@ -9,8 +9,10 @@ import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.dto.response.RikserResponseItem;
@@ -44,11 +46,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,12 +81,15 @@ public class YandexServiceImpl implements YandexSearchService {
 
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private Semaphore semaphore;
-  private BlockingQueue<YandexQueueItem> requestsQueue = new LinkedBlockingQueue<>();
+  private BlockingQueue<UserSearchQuery> requestsQueue;
+  private volatile boolean isQueueFilled = false;
 
   @PostConstruct
   void init() {
-    var queueSize = yandexProperties.getPoolQueueSize();
-    semaphore = new Semaphore(queueSize);
+    var poolSize = yandexProperties.getPoolSize();
+    var queueSize = yandexProperties.getQueueSize();
+    semaphore = new Semaphore(poolSize);
+    requestsQueue = new ArrayBlockingQueue<>(queueSize);
 
     executor.execute(() -> {
       while (true) {
@@ -155,22 +160,28 @@ public class YandexServiceImpl implements YandexSearchService {
     var userAgent = servletRequest.getHeader("User-Agent");
     requestDto.setUserAgent(userAgent);
 
-    var request = userSearchQueryService.saveByYandexRequest(searchDto);
-    initProcessing(new YandexQueueItem(requestDto, searchDto.getQueryText(), request));
+    UserSearchQuery request;
+
+    if (requestsQueue.remainingCapacity() == 0 || isQueueFilled) {
+      request = userSearchQueryService.saveByYandexRequest(searchDto, requestDto, UserSearchQueryStatus.CREATED);
+      isQueueFilled = true;
+    } else {
+      request = userSearchQueryService.saveByYandexRequest(searchDto, requestDto, UserSearchQueryStatus.IN_PROCESSING);
+      initProcessing(request);
+    }
 
    return createSearchResponse(request);
   }
 
-  private void initProcessing(YandexQueueItem queueItem) {
-    requestsQueue.add(queueItem);
+  private void initProcessing(UserSearchQuery searchQuery) {
+    requestsQueue.add(searchQuery);
   }
 
-  private void fetchYandexList(YandexQueueItem queueItem) throws InterruptedException {
+  private void fetchYandexList(UserSearchQuery searchQuery) throws InterruptedException {
     var authHeader = API_KEY + " " + yandexProperties.getToken();
     var currentAttempts = 0;
-    var requestDto = queueItem.yandexRequestDto();
-    var request = queueItem.userQuery();
-    var queryText = queueItem.queryText();
+    var requestDto = searchQuery.getUserRequest();
+    var queryText = searchQuery.getQueryText();
     var acquired = new AtomicBoolean(false);
 
     CompletableFuture
@@ -192,7 +203,7 @@ public class YandexServiceImpl implements YandexSearchService {
           .stream()
           .filter(doc -> !yandexProperties.getExcludeDomains().contains(doc.getDomain()))
           .toList();
-        return searchResponseService.saveSearchResponses(docs, request);
+        return searchResponseService.saveSearchResponses(docs, searchQuery);
       })
       .whenComplete((result, error) -> {
         if (acquired.get()) {
@@ -201,11 +212,11 @@ public class YandexServiceImpl implements YandexSearchService {
 
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
-          redisCacheService.put(queryText, request);
+          redisCacheService.put(queryText, searchQuery);
           prometheusMetrics.incrementSuccess();
         } else if (!Objects.isNull(error)) {
           log.warn("error get operation with query {} {}", queryText, error);
-          userSearchQueryService.changeStatus(request, UserSearchQueryStatus.FAILED);
+          userSearchQueryService.changeStatus(searchQuery, UserSearchQueryStatus.FAILED);
           prometheusMetrics.incrementFail();
         }
       });
@@ -321,7 +332,31 @@ public class YandexServiceImpl implements YandexSearchService {
       }
 
       return address;
-    }).findFirst().orElse(null);
+    })
+    .findFirst()
+    .orElse(null);
+  }
+
+  @Scheduled(fixedDelayString = "${yandex.scheduler-delay}")
+  @SchedulerLock(name = "CreatedQueryRequestsScheduler", lockAtLeastFor = "3s", lockAtMostFor = "10s")
+  void scheduleCreatedQueryRequests() {
+    var freeSpace = requestsQueue.remainingCapacity();
+
+    if (freeSpace == 0) {
+      return;
+    }
+
+
+    var requests = userSearchQueryService.findCreatedQueries(freeSpace);
+
+    if (requests.size() <= freeSpace) {
+      isQueueFilled = false;
+    }
+
+    requests.forEach(request -> {
+      userSearchQueryService.changeStatus(request, UserSearchQueryStatus.IN_PROCESSING);
+      initProcessing(request);
+    });
   }
 
   @Override
@@ -333,12 +368,5 @@ public class YandexServiceImpl implements YandexSearchService {
     response.setTotalElements(data.getTotalElements());
 
     return RikserResponseUtils.createResponse(response);
-  }
-
-  private record YandexQueueItem(
-    YandexQueryDto yandexRequestDto,
-    String queryText,
-    UserSearchQuery userQuery
-  ) {
   }
 }

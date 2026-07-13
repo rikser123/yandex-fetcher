@@ -5,6 +5,7 @@ CREATE TABLE user_search_query (
      family_mode VARCHAR(50),
      groups_on_page VARCHAR(20),
      status VARCHAR(40),
+     user_request JSONB NOT NULL,
      updated TIMESTAMP WITH TIME ZONE,
      created TIMESTAMP WITH TIME ZONE NOT NULL
 );

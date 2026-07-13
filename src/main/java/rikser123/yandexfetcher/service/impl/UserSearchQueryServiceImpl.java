@@ -14,6 +14,7 @@ import rikser123.bundle.dto.User;
 import rikser123.bundle.exception.StatusChangeException;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.UserSearchQueryDto;
@@ -69,7 +70,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
     return userSearchQueryRepository.save(userSearchQuery);
   }
 
-  public UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto) {
+  public UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto, YandexQueryDto userRequest, UserSearchQueryStatus status) {
     var user = (User) userDetailService.getCurrentUser();
 
     var request = new UserSearchQuery();
@@ -77,7 +78,8 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
     request.setGroupsOnPage(Objects.isNull(dto.getGroupsOnPage()) ? GroupsOnPage.TEN : dto.getGroupsOnPage());
     request.setQueryText(dto.getQueryText());
     request.setUserId(user.getId());
-    request.setStatus(UserSearchQueryStatus.CREATED);
+    request.setStatus(status);
+    request.setUserRequest(userRequest);
 
     return save(request);
   }
@@ -107,5 +109,11 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
       queryText,
       List.of(UserSearchQueryStatus.IN_PROCESSING, UserSearchQueryStatus.CREATED)
     );
+  }
+
+  @Override
+  public List<UserSearchQuery> findCreatedQueries(int limit) {
+    var size = PageRequest.of(0, limit);
+    return userSearchQueryRepository.findAllByStatusOrderByCreated(UserSearchQueryStatus.CREATED, size);
   }
 }

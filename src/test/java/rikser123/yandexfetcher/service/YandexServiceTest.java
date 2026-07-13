@@ -97,7 +97,8 @@ public class YandexServiceTest {
     yandexProperties.setToken("token");
     yandexProperties.setMaxAttempts(4);
     yandexProperties.setExcludeDomains(Collections.emptyList());
-    yandexProperties.setPoolQueueSize(10);
+    yandexProperties.setPoolSize(10);
+    yandexProperties.setQueueSize(10);
 
     yandexService = new YandexServiceImpl(
       yandexSearchClient,
@@ -138,7 +139,7 @@ public class YandexServiceTest {
     var searchDto = new YandexSearchQueryDto();
     searchDto.setQueryText("queryText");
 
-    when(userSearchQueryService.saveByYandexRequest(any())).thenReturn(request);
+    when(userSearchQueryService.saveByYandexRequest(any(), any(), any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(new YandexResponseAsyncDto());
     when(userDetailService.getCurrentUser()).thenReturn(new User());
     yandexService.search(searchDto, mockHttpServletRequest);
@@ -161,7 +162,7 @@ public class YandexServiceTest {
     var asyncDto = new YandexResponseAsyncDto();
     asyncDto.setId(UUID.randomUUID().toString());
 
-    when(userSearchQueryService.saveByYandexRequest(any())).thenReturn(request);
+    when(userSearchQueryService.saveByYandexRequest(any(), any(), any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(new YandexResponseOperationDto());
     when(userDetailService.getCurrentUser()).thenReturn(new User());
@@ -194,7 +195,7 @@ public class YandexServiceTest {
     yandexResponse.setRawData(rawData);
     operationDto.setResponse(yandexResponse);
 
-    when(userSearchQueryService.saveByYandexRequest(any())).thenReturn(request);
+    when(userSearchQueryService.saveByYandexRequest(any(), any(), any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(operationDto);
     when(userDetailService.getCurrentUser()).thenReturn(new User());
@@ -234,7 +235,7 @@ public class YandexServiceTest {
     yandexResponse.setRawData(rawData);
     operationDto.setResponse(yandexResponse);
 
-    when(userSearchQueryService.saveByYandexRequest(any())).thenReturn(request);
+    when(userSearchQueryService.saveByYandexRequest(any(), any(), any())).thenReturn(request);
     when(yandexSearchClient.search(any(), any())).thenReturn(asyncDto);
     when(yandexOperationClient.getSearchData(any(), any())).thenReturn(operationDto);
     when(userDetailService.getCurrentUser()).thenReturn(new User());

@@ -44,7 +44,9 @@ yandex:
   max-attempts: 4
   delay: 500
   exclude-domains: vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru
-  pool-queue-size: 100
+  pool-size: 100
+  queue-size: 100
+  scheduler-delay: PT10S
 
 kafka:
   max-fetch-limit: 200

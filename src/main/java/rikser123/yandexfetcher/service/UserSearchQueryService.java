@@ -2,12 +2,14 @@ package rikser123.yandexfetcher.service;
 
 import org.springframework.data.domain.Page;
 import rikser123.bundle.exception.StatusChangeException;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.UserSearchQueryDto;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,9 +41,12 @@ public interface UserSearchQueryService {
    * </p>
    *
    * @param dto DTO с параметрами поискового запроса
+   * @param userRequest Запрос пользователя в яндекс
+   * @param userRequest Статус пользователя
+   *
    * @return сохранённый запрос
    */
-  UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto);
+  UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto, YandexQueryDto userRequest, UserSearchQueryStatus status);
 
 
   /**
@@ -70,4 +75,11 @@ public interface UserSearchQueryService {
    * @return Список запросов пользователя в яндекс
    */
   Page<UserSearchQueryDto> findAll(YandexQueryListDto filter);
+  /**
+   * Найти все записи в статусе CREATED
+   *
+   * @param limit    Размер списка записей
+   * @return Список запросов пользователя в яндекс
+   */
+  List<UserSearchQuery> findCreatedQueries(int limit);
 }

@@ -18,7 +18,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
+import rikser123.yandexfetcher.dto.request.MessageSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -58,6 +62,10 @@ public class UserSearchQuery {
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)
   private UserSearchQueryStatus status;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb", name = "user_request", nullable = false)
+  private YandexQueryDto userRequest;
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<SearchResponse> responses = new HashSet<>();

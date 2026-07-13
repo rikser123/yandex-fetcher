@@ -84,7 +84,9 @@ yandex:
   max-attempts: 4
   delay: 500
   exclude-domains: ${EXCLUDE_DOMAINS:vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru}
-  pool-queue-size: ${YANDEX_POOL_QUEUE_SISE:300}
+  pool-size: ${YANDEX_POOL_SISE:100}
+  queue-size: ${YANDEX_QUEUE_SISE:300}
+  scheduler-delay: PT10S
 
 kafka:
   scheduler-delay: PT10S

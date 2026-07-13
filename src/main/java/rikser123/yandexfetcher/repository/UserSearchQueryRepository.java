@@ -1,5 +1,6 @@
 package rikser123.yandexfetcher.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ import java.util.UUID;
 public interface UserSearchQueryRepository extends JpaRepository<UserSearchQuery, UUID>,
   JpaSpecificationExecutor<UserSearchQuery> {
   Optional<UserSearchQuery> findByUserIdAndQueryTextAndStatusIsIn(UUID userId, String queryText, List<UserSearchQueryStatus> status);
+
+  List<UserSearchQuery> findAllByStatusOrderByCreated(UserSearchQueryStatus status, PageRequest size);
 }
