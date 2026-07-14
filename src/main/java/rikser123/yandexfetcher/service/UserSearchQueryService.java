@@ -6,6 +6,7 @@ import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.UserSearchQueryDto;
+import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
@@ -82,4 +83,12 @@ public interface UserSearchQueryService {
    * @return Список запросов пользователя в яндекс
    */
   List<UserSearchQuery> findCreatedQueries(int limit);
+
+  /**
+   * Сохранить ошибку обработки запроса
+   *
+   * @param error    Ошибка сохранения запроса
+   * @return Ошибку
+   */
+  UserQueryError saveError(UserQueryError error);
 }

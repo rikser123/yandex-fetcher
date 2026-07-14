@@ -19,9 +19,11 @@ import rikser123.yandexfetcher.dto.request.YandexQueryListDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.UserSearchQueryDto;
 import rikser123.yandexfetcher.mapper.UserSearchQueryMapper;
+import rikser123.yandexfetcher.repository.UserQueryErrorRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
+import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 import rikser123.yandexfetcher.repository.spec.YandexQueryListSpec;
@@ -40,6 +42,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   private final UserDetailService userDetailService;
   private final StatusMatrix<UserSearchQueryStatus> requestStatusMatrix;
   private final UserSearchQueryMapper requestMapper;
+  private final UserQueryErrorRepository userQueryErrorRepository;
 
   @Transactional
   public UserSearchQuery findById(UUID id) {
@@ -115,5 +118,11 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   public List<UserSearchQuery> findCreatedQueries(int limit) {
     var size = PageRequest.of(0, limit);
     return userSearchQueryRepository.findAllByStatusOrderByCreated(UserSearchQueryStatus.CREATED, size);
+  }
+
+  @Transactional
+  @Override
+  public UserQueryError saveError(UserQueryError error) {
+    return userQueryErrorRepository.save(error);
   }
 }

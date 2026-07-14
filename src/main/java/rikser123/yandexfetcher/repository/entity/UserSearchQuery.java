@@ -21,7 +21,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import rikser123.yandexfetcher.dto.request.MessageSearchResponseDto;
 import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 
 import java.time.Instant;
@@ -69,6 +68,12 @@ public class UserSearchQuery {
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<SearchResponse> responses = new HashSet<>();
+
+  @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  private Set<QueryAnalysis> analyses;
+
+  @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+  private Set<UserQueryError> errors;
 
   @UpdateTimestamp
   @Column(name = "updated", insertable = false)

@@ -62,4 +62,21 @@ CREATE TABLE search_response_error (
     updated TIMESTAMP WITHOUT TIME ZONE
 );
 
+CREATE TABLE query_analysis (
+    id UUID PRIMARY KEY,
+    analysis TEXT NOT NULL,
+    query_id UUID NOT NULL REFERENCES user_search_query(id),
+    created TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE user_query_error (
+      id UUID PRIMARY KEY,
+      user_query_id UUID NOT NULL,
+      code VARCHAR(100),
+      message TEXT NOT NULL,
+      created TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated TIMESTAMP WITH TIME ZONE
+);
+
 

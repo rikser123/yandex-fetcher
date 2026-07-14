@@ -13,37 +13,34 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "search_response_error")
+@Table(name = "query_analysis")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SearchResponseError {
+public class QueryAnalysis {
   @Id
-  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @JoinColumn(name = "search_response_error_id", referencedColumnName = "id")
+  @Column(name = "analysis", nullable = false)
+  private String analysis;
+
   @ManyToOne
-  private SearchResponse searchResponse;
+  @JoinColumn(name = "query_id", referencedColumnName = "id")
+  private UserSearchQuery userSearchQuery;
 
-  @Column(name = "code", length = 100)
-  private String code;
-
-  @Column(name = "message", nullable = false)
-  private String message;
-
-  @Column(name = "created", updatable = false)
   @CreationTimestamp
+  @Column(name = "created", updatable = false)
   private Instant created;
 
+  @UpdateTimestamp
   @Column(name = "updated", insertable = false)
-  @CreationTimestamp
   private Instant updated;
 }

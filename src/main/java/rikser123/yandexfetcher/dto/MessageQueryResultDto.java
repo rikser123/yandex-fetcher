@@ -17,13 +17,5 @@ public class MessageQueryResultDto {
 
   @NotNull(message = "Параметр status должен присутствовать!")
   private SearchResponseStatus status;
-  private KafkaMessageError error;
-
-  @Data
-  @AllArgsConstructor
-  @NoArgsConstructor
-  public static class KafkaMessageError {
-    private String message;
-    private String code;
-  }
+  private MessageError error;
 }

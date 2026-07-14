@@ -18,20 +18,20 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "search_response_error")
+@Table(name = "user_query_error")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SearchResponseError {
+public class UserQueryError {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @JoinColumn(name = "search_response_error_id", referencedColumnName = "id")
+  @JoinColumn(name = "user_query_id", referencedColumnName = "id")
   @ManyToOne
-  private SearchResponse searchResponse;
+  private UserSearchQuery userSearchQuery;
 
   @Column(name = "code", length = 100)
   private String code;
