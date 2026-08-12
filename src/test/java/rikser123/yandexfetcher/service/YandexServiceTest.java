@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import rikser123.bundle.dto.User;
-import rikser123.bundle.service.RedisCacheService;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.component.PrometheusMetrics;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
@@ -25,6 +24,8 @@ import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
+import rikser123.yandexfetcher.repository.entity.QueryAnalysis;
+import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 import rikser123.yandexfetcher.service.impl.YandexServiceImpl;
@@ -59,9 +60,6 @@ public class YandexServiceTest {
 
   @Mock
   private UserSearchQueryService userSearchQueryService;
-
-  @Mock
-  private RedisCacheService redisCacheService;
 
   @Mock
   private UserDetailService userDetailService;
@@ -106,7 +104,6 @@ public class YandexServiceTest {
       new YandexResponseXmlParser(),
       yandexProperties,
       userSearchQueryService,
-      redisCacheService,
       userDetailService,
       yandexMapper,
       languageDetector,
@@ -254,6 +251,29 @@ public class YandexServiceTest {
 
   @Test
   void shouldReturnExistedProcessingRequest() {
+    var request = createRequest();
+    request.setStatus(UserSearchQueryStatus.PROCESSED);
+    var analysis = new QueryAnalysis();
+    analysis.setId(UUID.randomUUID());
+    analysis.setAnalysis("analysis");
+    analysis.setStatus(QueryAnalysisStatus.CREATED);
+    request.getAnalyses().add(analysis);
+
+    var user = new User();
+    user.setId(UUID.randomUUID());
+    var searchDto = new YandexSearchQueryDto();
+    searchDto.setQueryText("queryText");
+
+    when(userDetailService.getCurrentUser()).thenReturn(user);
+    when(userSearchQueryService.findWithAnalysis(request.getQueryText())).thenReturn(Optional.of(request));
+
+    var result = yandexService.search(searchDto, mockHttpServletRequest);
+    assertThat(result.getData().getQueryId()).isEqualTo(request.getId());
+    assertThat(result.getData().getAnalysis()).isEqualTo(analysis.getAnalysis());
+  }
+
+  @Test
+  void shouldReturnExistedQueryWithAnalysis() {
     var request = createRequest();
     request.setStatus(UserSearchQueryStatus.IN_PROCESSING);
     var user = new User();

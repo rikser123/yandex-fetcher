@@ -50,4 +50,7 @@ yandex:
 
 kafka:
   max-fetch-limit: 200
-  scheduler-delay: PT02S
+
+schedulers:
+  kafka:
+    delay: PT10S

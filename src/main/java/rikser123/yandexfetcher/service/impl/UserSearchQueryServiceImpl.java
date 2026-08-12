@@ -23,6 +23,7 @@ import rikser123.yandexfetcher.repository.UserQueryErrorRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
+import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
@@ -44,14 +45,12 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   private final UserSearchQueryMapper requestMapper;
   private final UserQueryErrorRepository userQueryErrorRepository;
 
-  @Transactional
   public UserSearchQuery findById(UUID id) {
     return userSearchQueryRepository.findById(id)
       .orElseThrow(() -> new EntityNotFoundException("Не найден запрос пользователя с id " + id));
   }
 
   @Override
-  @Transactional
   public Page<UserSearchQueryDto> findAll(YandexQueryListDto filter) {
     var currentUser = (User) userDetailService.getCurrentUser();
 
@@ -124,5 +123,11 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   @Override
   public UserQueryError saveError(UserQueryError error) {
     return userQueryErrorRepository.save(error);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public Optional<UserSearchQuery> findWithAnalysis(String queryText) {
+    return userSearchQueryRepository.findByQueryTextAndStatus(queryText, UserSearchQueryStatus.PROCESSED, QueryAnalysisStatus.CREATED);
   }
 }

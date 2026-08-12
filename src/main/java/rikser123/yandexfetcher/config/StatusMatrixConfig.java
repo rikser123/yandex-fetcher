@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.impl.StatusMatrixImpl;
+import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
@@ -26,6 +27,14 @@ public class StatusMatrixConfig {
     var statusMatrix = new StatusMatrixImpl<SearchResponseStatus>();
     statusMatrix.addTransition(SearchResponseStatus.CREATED, EnumSet.of(SearchResponseStatus.IN_PROCESSING, SearchResponseStatus.FAILED));
     statusMatrix.addTransition(SearchResponseStatus.IN_PROCESSING, EnumSet.of(SearchResponseStatus.PROCESSED, SearchResponseStatus.FAILED));
+
+    return statusMatrix;
+  }
+
+  @Bean
+  public StatusMatrix<QueryAnalysisStatus> queryAnalysisStatusMartrix() {
+    var statusMatrix = new StatusMatrixImpl<QueryAnalysisStatus>();
+    statusMatrix.addTransition(QueryAnalysisStatus.CREATED, EnumSet.of(QueryAnalysisStatus.OUTDATED));
 
     return statusMatrix;
   }

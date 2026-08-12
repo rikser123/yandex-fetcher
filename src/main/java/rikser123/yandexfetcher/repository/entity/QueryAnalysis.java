@@ -2,6 +2,8 @@ package rikser123.yandexfetcher.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +37,10 @@ public class QueryAnalysis {
   @ManyToOne
   @JoinColumn(name = "query_id", referencedColumnName = "id")
   private UserSearchQuery userSearchQuery;
+
+  @Column(name = "status")
+  @Enumerated(EnumType.STRING)
+  private QueryAnalysisStatus status;
 
   @CreationTimestamp
   @Column(name = "created", updatable = false)

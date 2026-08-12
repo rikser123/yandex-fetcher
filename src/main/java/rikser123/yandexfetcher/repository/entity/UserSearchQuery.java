@@ -9,8 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,12 +17,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import jakarta.persistence.OrderBy;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,10 +35,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@NamedEntityGraph(
-  name = "responses",
-  attributeNodes = { @NamedAttributeNode("responses")}
-)
 public class UserSearchQuery {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -70,7 +67,8 @@ public class UserSearchQuery {
   private Set<SearchResponse> responses = new HashSet<>();
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-  private Set<QueryAnalysis> analyses;
+  @OrderBy("created DESC")
+  private LinkedHashSet<QueryAnalysis> analyses = new LinkedHashSet<>();
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<UserQueryError> errors;
@@ -82,4 +80,12 @@ public class UserSearchQuery {
   @CreationTimestamp
   @Column(name = "created", updatable = false)
   private Instant created;
+
+  public Optional<QueryAnalysis> getLastAnalysis() {
+    if (analyses.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(analyses.getFirst());
+  }
 }

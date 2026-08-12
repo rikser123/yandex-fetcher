@@ -18,7 +18,7 @@ public class SearchResponseOutboxScheduler {
   private final QueryProducer queryProducer;
   private final SearchResponseOutboxService searchResponseOutboxService;
 
-  @Scheduled(fixedDelayString = "${kafka.scheduler-delay}")
+  @Scheduled(fixedDelayString = "${schedulers:kafka:delay}")
   @SchedulerLock(name = "SearchResponseOutboxScheduler", lockAtLeastFor = "3s", lockAtMostFor = "10s")
   public void schedule() {
     log.info("SearchResponseOutboxScheduler started");

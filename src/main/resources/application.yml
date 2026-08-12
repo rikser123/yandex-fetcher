@@ -29,12 +29,6 @@ spring:
     bootstrap-servers: ${KAFKA_URL}
     consumer:
       group-id: fetcher
-  data:
-    redis:
-      host: ${REDIS_URL}
-      port: 6379
-      password: ${REDIS_PASSWORD}
-      timeout: 2000ms
 
 server:
   port: 8081
@@ -51,17 +45,12 @@ bundle:
     service:
       enabled: true
       url: ${SECURITY_URL}
-  redis:
-    TTL: P1D
-    prefix: yandex-query
-    enabled: true
   kafka:
     enabled: true
     user: ${KAFKA_USER}
     password: ${KAFKA_PASSWORD}
     kafka-url: ${KAFKA_URL}
     max-fetch-limit: 200
-
 
 management:
   tracing:
@@ -88,11 +77,15 @@ yandex:
   queue-size: ${YANDEX_QUEUE_SISE:300}
   scheduler-delay: PT10S
 
-kafka:
-  scheduler-delay: PT10S
+schedulers:
+  kafka:
+    delay: PT10S
+  analysis:
+    delay: PT1M
 
 logbook:
   predicate:
     exclude:
       - path: /api/v1/user/public-key
       - path: /actuator/**
+

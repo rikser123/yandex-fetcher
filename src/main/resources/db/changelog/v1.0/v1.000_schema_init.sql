@@ -65,6 +65,7 @@ CREATE TABLE search_response_error (
 CREATE TABLE query_analysis (
     id UUID PRIMARY KEY,
     analysis TEXT NOT NULL,
+    status VARCHAR(100),
     query_id UUID NOT NULL REFERENCES user_search_query(id),
     created TIMESTAMP WITH TIME ZONE NOT NULL,
     updated TIMESTAMP WITH TIME ZONE

@@ -4,6 +4,7 @@ import com.optimaize.langdetect.LanguageDetector;
 import com.optimaize.langdetect.i18n.LdLocale;
 import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObjectFactory;
+import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rikser123.bundle.dto.User;
 import rikser123.bundle.dto.response.RikserResponseItem;
-import rikser123.bundle.service.RedisCacheService;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.utils.RikserResponseUtils;
 import rikser123.yandexfetcher.component.PrometheusMetrics;
@@ -32,6 +32,7 @@ import rikser123.yandexfetcher.dto.response.YandexSearchResponseDto;
 import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.mapper.YandexMapper;
+import rikser123.yandexfetcher.repository.entity.QueryAnalysis;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 import rikser123.yandexfetcher.service.Ip2RegionService;
@@ -65,7 +66,6 @@ public class YandexServiceImpl implements YandexSearchService {
   private final YandexResponseXmlParser xmlParser;
   private final YandexProperties yandexProperties;
   private final UserSearchQueryService userSearchQueryService;
-  private final RedisCacheService redisCacheService;
   private final UserDetailService userDetailService;
   private final YandexMapper yandexMapper;
   private final LanguageDetector languageDetector;
@@ -142,11 +142,10 @@ public class YandexServiceImpl implements YandexSearchService {
       return RikserResponseUtils.createResponse("Превышен лимит запросов по данному тарифу!", HttpStatus.FORBIDDEN);
     }
 
-    Optional<UserSearchQuery> existedQueryOpt = redisCacheService.get(searchDto.getQueryText(), UserSearchQuery.class);
-    if (existedQueryOpt.isPresent()) {
+    var alreadyProcessedQuery = userSearchQueryService.findWithAnalysis(searchDto.getQueryText()).orElse(null);
+    if (!Objects.isNull(alreadyProcessedQuery) && alreadyProcessedQuery.getLastAnalysis().isPresent()) {
       prometheusMetrics.incrementCache();
-      var request = existedQueryOpt.get();
-      return createSearchResponse(request);
+      return createSearchResponse(alreadyProcessedQuery, alreadyProcessedQuery.getLastAnalysis().get());
     }
 
     var requestDto = yandexMapper.mapToRequestDto(searchDto);
@@ -212,7 +211,6 @@ public class YandexServiceImpl implements YandexSearchService {
 
         if (!Objects.isNull(result)) {
           log.info("successfully saved {}", result);
-          redisCacheService.put(queryText, searchQuery);
           prometheusMetrics.incrementSuccess();
         } else if (!Objects.isNull(error)) {
           log.warn("error get operation with query {} {}", queryText, error);
@@ -283,10 +281,16 @@ public class YandexServiceImpl implements YandexSearchService {
       .toList();
   }
 
-  private RikserResponseItem<YandexSearchResponseDto> createSearchResponse(UserSearchQuery userSearchQuery) {
+  private RikserResponseItem<YandexSearchResponseDto> createSearchResponse(UserSearchQuery userSearchQuery, @Nullable QueryAnalysis analysis) {
+    var analysisText = !Objects.isNull(analysis) && StringUtils.isNotEmpty(analysis.getAnalysis()) ? analysis.getAnalysis() : null;
     var responseDto = new YandexSearchResponseDto();
     responseDto.setQueryId(userSearchQuery.getId());
+    responseDto.setAnalysis(analysisText);
     return RikserResponseUtils.createResponse(responseDto);
+  }
+
+  private RikserResponseItem<YandexSearchResponseDto> createSearchResponse(UserSearchQuery userSearchQuery) {
+    return createSearchResponse(userSearchQuery, null);
   }
 
   private YandexQueryDto.Localization getLocalization(String text) {

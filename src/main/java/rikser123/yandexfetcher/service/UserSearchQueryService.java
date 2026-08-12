@@ -91,4 +91,12 @@ public interface UserSearchQueryService {
    * @return Ошибку
    */
   UserQueryError saveError(UserQueryError error);
+
+  /**
+   * Найти запрос пользователя с уже существующим аналазом
+   *
+   * @param queryText    Текст
+   * @return Список запросов пользователя в яндекс
+   */
+  Optional<UserSearchQuery> findWithAnalysis(String queryText);
 }
