@@ -68,7 +68,7 @@ public class UserSearchQuery {
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   @OrderBy("created DESC")
-  private LinkedHashSet<QueryAnalysis> analyses = new LinkedHashSet<>();
+  private Set<QueryAnalysis> analyses = new LinkedHashSet<>();
 
   @OneToMany(mappedBy = "userSearchQuery", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
   private Set<UserQueryError> errors;
@@ -86,6 +86,6 @@ public class UserSearchQuery {
       return Optional.empty();
     }
 
-    return Optional.of(analyses.getFirst());
+    return analyses.stream().findFirst();
   }
 }

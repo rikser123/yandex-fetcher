@@ -11,5 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface QueryAnalysisRepository extends JpaRepository<QueryAnalysis, UUID> {
-  List<QueryAnalysis> findAllByCreatedLessThanAAndStatus(Instant date, QueryAnalysisStatus status);
+  List<QueryAnalysis> findAllByCreatedLessThanAndStatus(Instant date, QueryAnalysisStatus status);
 }

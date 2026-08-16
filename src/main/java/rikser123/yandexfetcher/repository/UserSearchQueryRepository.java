@@ -26,7 +26,7 @@ public interface UserSearchQueryRepository extends JpaRepository<UserSearchQuery
     SELECT q FROM UserSearchQuery q
     LEFT JOIN FETCH q.analyses a
     WHERE q.queryText =:queryText
-    AND q.status =: queryStatus
+    AND q.status =:queryStatus
     AND a.status =:analysisStatus
   """)
   Optional<UserSearchQuery> findByQueryTextAndStatus(String queryText, UserSearchQueryStatus queryStatus, QueryAnalysisStatus analysisStatus);

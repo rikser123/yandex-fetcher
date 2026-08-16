@@ -53,7 +53,7 @@ public class QueryAnalysisConsumer {
       queryAnalysisService.save(analysisDto, currentQuery);
       userSearchQueryService.changeStatus(currentQuery, UserSearchQueryStatus.PROCESSED);
     } catch (Exception e) {
-      log.warn("error handling query result ayanysys", e);
+      log.warn("error handling query result analysis", e);
     }
   }
 }

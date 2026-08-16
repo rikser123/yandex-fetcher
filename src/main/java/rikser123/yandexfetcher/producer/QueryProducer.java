@@ -28,6 +28,7 @@ public class QueryProducer {
   private final SearchResponseOutboxService requestOutboxMessageService;
   private final SearchResponseService responseService;
 
+
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(SearchResponseMessage kafkaRequestMessage) {
     var dto = kafkaRequestMessage.getDto();

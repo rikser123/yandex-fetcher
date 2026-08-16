@@ -54,3 +54,5 @@ kafka:
 schedulers:
   kafka:
     delay: PT10S
+  analysis:
+    delay: PT1M

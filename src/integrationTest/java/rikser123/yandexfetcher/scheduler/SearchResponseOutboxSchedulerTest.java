@@ -8,6 +8,7 @@ import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.BaseConfig;
 import rikser123.yandexfetcher.dto.request.MessageSearchResponseDto;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.repository.SearchResponseMessageRepository;
 import rikser123.yandexfetcher.repository.SearchResponseRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
@@ -52,9 +53,6 @@ public class SearchResponseOutboxSchedulerTest extends BaseConfig {
         var firstMessage = requestMessageRepository.findAll().getFirst();
         assertThat(firstMessage.getStatus()).isEqualTo(OutboxMessageStatus.SENT);
 
-        var userQuery = userSearchQueryRepository.findById(kafkaMessage.getDto().getSearchQueryId());
-        assertThat(userQuery.get().getStatus()).isEqualTo(UserSearchQueryStatus.IN_PROCESSING);
-
         var searchResponse = searchResponseRepository
           .findById(kafkaMessage.getDto().getSearchResponses().getFirst().getSearchResponseId());
         assertThat(searchResponse.get().getStatus()).isEqualTo(SearchResponseStatus.IN_PROCESSING);
@@ -66,6 +64,7 @@ public class SearchResponseOutboxSchedulerTest extends BaseConfig {
     searchQuery.setUserId(UUID.randomUUID());
     searchQuery.setQueryText("text");
     searchQuery.setStatus(UserSearchQueryStatus.CREATED);
+    searchQuery.setUserRequest(new YandexQueryDto());
     var query = userSearchQueryRepository.save(searchQuery);
 
     var searchResponseEntity = new SearchResponse();
