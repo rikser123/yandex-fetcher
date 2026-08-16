@@ -11,6 +11,7 @@ import rikser123.bundle.dto.User;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.BaseConfig;
 import rikser123.yandexfetcher.IntegrationUtils;
+import rikser123.yandexfetcher.dto.request.YandexQueryDto;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.SearchResponseRepository;
@@ -110,6 +111,7 @@ public class FetchControllerTest extends BaseConfig {
     request.setUserId(userId);
     request.setQueryText("queryText");
     request.setStatus(UserSearchQueryStatus.CREATED);
+    request.setUserRequest(new YandexQueryDto());
 
     var requestResult = new SearchResponse();
     requestResult.setStatus(SearchResponseStatus.CREATED);
