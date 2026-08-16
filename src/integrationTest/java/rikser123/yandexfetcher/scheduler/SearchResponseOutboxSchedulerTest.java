@@ -71,7 +71,7 @@ public class SearchResponseOutboxSchedulerTest extends BaseConfig {
     searchResponseEntity.setStatus(SearchResponseStatus.CREATED);
     searchResponseEntity.setUrl("url");
     searchResponseEntity.setDomain("domain");
-    searchResponseEntity.setTitle(("title"));
+    searchResponseEntity.setTitle(("title2"));
     var response = searchResponseRepository.save(searchResponseEntity);
 
     var kafkaMessage = new SearchResponseMessage();
