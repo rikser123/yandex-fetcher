@@ -29,10 +29,7 @@ import static org.mockserver.model.HttpResponse.response;
 @WithMockUser(authorities = {"CHECK_SPELLS", "CREATE_REQUEST", "VIEW_REQUEST"})
 @EmbeddedKafka(
   topics = {"QUERY"},
-  brokerProperties = {
-    "listeners=PLAINTEXT://localhost:9092",
-    "port=9092"
-  }
+  ports = {0}
 )
 @Testcontainers
 public abstract class BaseConfig {
