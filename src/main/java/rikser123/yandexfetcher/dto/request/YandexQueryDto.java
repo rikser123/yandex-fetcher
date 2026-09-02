@@ -41,7 +41,7 @@ public class YandexQueryDto {
   @NoArgsConstructor
   @Data
   public static class GroupSpec {
-    private GroupsOnPage groupsOnPage;
+    private String groupsOnPage;
   }
 
   @AllArgsConstructor

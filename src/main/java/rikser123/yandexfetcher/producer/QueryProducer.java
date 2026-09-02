@@ -14,8 +14,6 @@ import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
 import rikser123.yandexfetcher.service.SearchResponseOutboxService;
 import rikser123.yandexfetcher.service.SearchResponseService;
 
-import static rikser123.yandexfetcher.config.KafkaTopicConfig.QUERY_TOPIC;
-
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Slf4j
 public class QueryProducer {
+  private static final  String QUERY_TOPIC = "QUERY";
+
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapper objectMapper;
   private final SearchResponseOutboxService requestOutboxMessageService;
@@ -33,6 +33,8 @@ public class QueryProducer {
   public CompletableFuture<SendResult<String, String>> send(SearchResponseMessage kafkaRequestMessage) {
     var dto = kafkaRequestMessage.getDto();
     var message = objectMapper.writeValueAsString(dto);
+
+    log.warn("!!!!!!!!!!!!!!!! message send  {}", QUERY_TOPIC);
 
     return kafkaTemplate.send(QUERY_TOPIC, message).whenComplete((result, error) -> {
       if (!Objects.isNull(result)) {

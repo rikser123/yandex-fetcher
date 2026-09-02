@@ -72,7 +72,7 @@ yandex:
   speller-api: ${YANDEX_SPELLER_API_URL}
   max-attempts: 4
   delay: 500
-  exclude-domains: ${EXCLUDE_DOMAINS:vk.com,pikabu.ru,rutube.ru,youtube.com,yandex.ru,mail.ru}
+  exclude-domains: ${EXCLUDE_DOMAINS:vk.com,vk.ru,pikabu.ru,rutube,youtube,yandex,mail.ru,mail.com,vkvideo,dzen.ru,t.me,gmail.com,wiki2}
   pool-size: ${YANDEX_POOL_SISE:100}
   queue-size: ${YANDEX_QUEUE_SISE:300}
   scheduler-delay: PT10S
