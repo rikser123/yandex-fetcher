@@ -2,12 +2,12 @@ package rikser123.yandexfetcher.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
-import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +23,9 @@ public class YandexSearchQueryDto {
   private FamilyMode familyMode;
 
   @Schema(description = "Количество записей для обработки")
-  private GroupsOnPage groupsOnPage;
+  @Pattern(regexp = "^([0-9]|[1-9][0-9]|100)$",
+    message = "Значение должно быть числом от 0 до 100")
+  private String groupsOnPage;
 
   @Schema(description = "Тип сортировки")
   private YandexQueryDto.SortMode sortMode;

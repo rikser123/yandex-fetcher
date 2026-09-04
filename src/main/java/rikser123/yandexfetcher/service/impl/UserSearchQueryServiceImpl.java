@@ -22,7 +22,6 @@ import rikser123.yandexfetcher.mapper.UserSearchQueryMapper;
 import rikser123.yandexfetcher.repository.UserQueryErrorRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
-import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
@@ -77,7 +76,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
 
     var request = new UserSearchQuery();
     request.setFamilyMode(Objects.isNull(dto.getFamilyMode()) ? FamilyMode.FAMILY_MODE_MODERATE : dto.getFamilyMode());
-    request.setGroupsOnPage(Objects.isNull(dto.getGroupsOnPage()) ? GroupsOnPage.TEN : dto.getGroupsOnPage());
+    request.setGroupsOnPage(dto.getGroupsOnPage());
     request.setQueryText(dto.getQueryText());
     request.setUserId(user.getId());
     request.setStatus(status);

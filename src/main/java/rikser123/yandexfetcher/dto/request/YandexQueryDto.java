@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
-import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 
 @Data
 @AllArgsConstructor

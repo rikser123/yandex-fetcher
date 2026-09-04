@@ -52,8 +52,7 @@ public class UserSearchQuery {
   private FamilyMode familyMode;
 
   @Column(name = "groups_on_page", length = 20)
-  @Enumerated(EnumType.STRING)
-  private GroupsOnPage groupsOnPage;
+  private String groupsOnPage;
 
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)

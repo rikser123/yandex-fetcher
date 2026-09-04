@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum GroupsOnPage {
   FIVE("5"),
-  TEN("10"),
+  TEN("100"),
   FITHTEEN("15"),
   TWENTY("20"),
   THIRTY("30");
