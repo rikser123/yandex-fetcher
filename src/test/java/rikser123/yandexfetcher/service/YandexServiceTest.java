@@ -293,7 +293,7 @@ public class YandexServiceTest {
     request.setUserId(UUID.randomUUID());
     request.setId(UUID.randomUUID());
     request.setFamilyMode(FamilyMode.FAMILY_MODE_MODERATE);
-    request.setGroupsOnPage(GroupsOnPage.TEN);
+    request.setGroupsOnPage("80");
     request.setQueryText("queryText");
     return request;
   }

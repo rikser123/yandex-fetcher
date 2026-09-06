@@ -78,6 +78,7 @@ public class YandexServiceImpl implements YandexSearchService {
   private static final TextObjectFactory textFactory = CommonTextObjectFactories.forDetectingShortCleanText();
   private static final String API_KEY = "Api-Key";
   private static final String DEFAULT_LANGUAGE = "ru";
+  private static final String DEFAULT_GROUPS_ON_PAGE = "80";
 
   private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
   private Semaphore semaphore;
@@ -126,6 +127,9 @@ public class YandexServiceImpl implements YandexSearchService {
     var userTarifInfo = securityService.getUserTarif(currentUser.getId());
 
     searchDto.setQueryText(searchDto.getQueryText().strip());
+    if (StringUtils.isEmpty(searchDto.getGroupsOnPage())) {
+      searchDto.setGroupsOnPage(DEFAULT_GROUPS_ON_PAGE);
+    }
     var existedRequestOpt = userSearchQueryService.findProcessingQuery(currentUser.getId(), searchDto.getQueryText());
 
     if (existedRequestOpt.isPresent()) {
