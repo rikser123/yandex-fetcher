@@ -36,9 +36,8 @@ public class QueryAnalysisServiceImpl implements QueryAnalysisService {
 
   @Override
   public List<QueryAnalysis> findOutdatedAnalysis() {
-    var now = Instant.now();
-    now.minus(7, ChronoUnit.DAYS);
-    return queryAnalysisRepository.findAllByCreatedLessThanAndStatus(now, QueryAnalysisStatus.CREATED);
+    var timeLimit = Instant.now().minus(7, ChronoUnit.DAYS);
+    return queryAnalysisRepository.findAllByCreatedLessThanAndStatus(timeLimit, QueryAnalysisStatus.CREATED);
   }
 
   @Override
