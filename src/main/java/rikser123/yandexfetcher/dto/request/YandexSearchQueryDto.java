@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rikser123.bundle.validation.CheckSqlInjection;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 
 @Data
@@ -17,6 +18,7 @@ public class YandexSearchQueryDto {
   @Schema(description = "Поисковая строка запроса")
   @NotBlank(message = "Параметр queryText должен быть заполнен!")
   @Size(max = 400, message = "Длина параметра queryText не должна превышать 400 символов!")
+  @CheckSqlInjection
   private String queryText;
 
   @Schema(description = "Параметры семейного режима")
@@ -25,6 +27,7 @@ public class YandexSearchQueryDto {
   @Schema(description = "Количество записей для обработки")
   @Pattern(regexp = "^([0-9]|[1-9][0-9]|100)$",
     message = "Значение должно быть числом от 0 до 100")
+  @CheckSqlInjection
   private String groupsOnPage;
 
   @Schema(description = "Тип сортировки")
