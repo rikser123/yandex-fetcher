@@ -83,6 +83,7 @@ public class SearchResponseServiceImpl implements SearchResponseService {
       kafkaDtoResponse.setDomain(searchResponse.getDomain());
       kafkaDtoResponse.setSearchResponseId(searchResponse.getId());
       kafkaDtoResponse.setUrl(searchResponse.getUrl());
+      kafkaDtoResponse.setPassages(searchResponse.getPassages());
       kafkaDto.getSearchResponses().add(kafkaDtoResponse);
     });
 

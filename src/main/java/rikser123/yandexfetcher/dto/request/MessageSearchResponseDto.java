@@ -24,5 +24,6 @@ public class MessageSearchResponseDto {
     private UUID searchResponseId;
     private String url;
     private String domain;
+    private String passages;
   }
 }
