@@ -76,7 +76,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
 
     var request = new UserSearchQuery();
     request.setFamilyMode(Objects.isNull(dto.getFamilyMode()) ? FamilyMode.FAMILY_MODE_MODERATE : dto.getFamilyMode());
-    request.setGroupsOnPage(dto.getGroupsOnPage());
+    request.setSearchMode(dto.getSearchMode());
     request.setQueryText(dto.getQueryText());
     request.setUserId(user.getId());
     request.setStatus(status);

@@ -15,6 +15,7 @@ import rikser123.yandexfetcher.component.PrometheusMetrics;
 import rikser123.yandexfetcher.component.YandexResponseXmlParser;
 import rikser123.yandexfetcher.config.YandexProperties;
 import rikser123.yandexfetcher.dto.YandexResponse;
+import rikser123.yandexfetcher.dto.request.YandexSearchMode;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.dto.response.UserResponseTarifDto;
 import rikser123.yandexfetcher.dto.response.YandexResponseAsyncDto;
@@ -23,7 +24,6 @@ import rikser123.yandexfetcher.feign.YandexOperationClient;
 import rikser123.yandexfetcher.feign.YandexSearchClient;
 import rikser123.yandexfetcher.mapper.YandexMapper;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
-import rikser123.yandexfetcher.repository.entity.GroupsOnPage;
 import rikser123.yandexfetcher.repository.entity.QueryAnalysis;
 import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
@@ -293,7 +293,7 @@ public class YandexServiceTest {
     request.setUserId(UUID.randomUUID());
     request.setId(UUID.randomUUID());
     request.setFamilyMode(FamilyMode.FAMILY_MODE_MODERATE);
-    request.setGroupsOnPage("80");
+    request.setSearchMode(YandexSearchMode.DETAIL);
     request.setQueryText("queryText");
     return request;
   }

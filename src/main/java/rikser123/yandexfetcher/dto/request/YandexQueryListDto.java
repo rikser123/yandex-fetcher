@@ -1,7 +1,6 @@
 package rikser123.yandexfetcher.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,9 +22,7 @@ public class YandexQueryListDto {
   private String queryText;
 
   private FamilyMode familyMode;
-  @Pattern(regexp = "^([0-9]|[1-9][0-9]|100)$",
-    message = "Значение должно быть числом от 0 до 100")
-  private String groupsOnPage;
+  private YandexSearchMode searchMode;
   private UserSearchQueryStatus status;
   private Instant dateFrom;
   private Instant dateTo;

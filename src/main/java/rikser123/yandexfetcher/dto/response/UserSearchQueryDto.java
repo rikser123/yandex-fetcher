@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import rikser123.yandexfetcher.dto.request.YandexSearchMode;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
@@ -20,7 +21,7 @@ public class UserSearchQueryDto {
   private UUID userId;
   private String queryText;
   private FamilyMode familyMode;
-  private String groupsOnPage;
+  private YandexSearchMode searchMode;
   private UserSearchQueryStatus status;
   private Set<SearchResponseDto> responses = new HashSet<>();
   private Instant updated;

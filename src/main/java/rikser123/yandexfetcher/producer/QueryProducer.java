@@ -28,13 +28,10 @@ public class QueryProducer {
   private final SearchResponseOutboxService requestOutboxMessageService;
   private final SearchResponseService responseService;
 
-
   @SneakyThrows
   public CompletableFuture<SendResult<String, String>> send(SearchResponseMessage kafkaRequestMessage) {
     var dto = kafkaRequestMessage.getDto();
     var message = objectMapper.writeValueAsString(dto);
-
-    log.warn("!!!!!!!!!!!!!!!! message send  {}", QUERY_TOPIC);
 
     return kafkaTemplate.send(QUERY_TOPIC, message).whenComplete((result, error) -> {
       if (!Objects.isNull(result)) {

@@ -3,7 +3,7 @@ CREATE TABLE user_search_query (
      user_id UUID NOT NULL,
      query_text VARCHAR(400) NOT NULL,
      family_mode VARCHAR(50),
-     groups_on_page VARCHAR(20),
+     search_mode VARCHAR(50),
      status VARCHAR(40),
      user_request JSONB NOT NULL,
      updated TIMESTAMP WITH TIME ZONE,

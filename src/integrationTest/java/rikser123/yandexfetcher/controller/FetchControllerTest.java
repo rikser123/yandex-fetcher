@@ -12,6 +12,7 @@ import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.BaseConfig;
 import rikser123.yandexfetcher.IntegrationUtils;
 import rikser123.yandexfetcher.dto.request.YandexQueryDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchMode;
 import rikser123.yandexfetcher.dto.request.YandexSearchQueryDto;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.SearchResponseRepository;
@@ -58,6 +59,7 @@ public class FetchControllerTest extends BaseConfig {
   void fetchData() throws Exception {
    var searchDto = new YandexSearchQueryDto();
    searchDto.setQueryText("text");
+   searchDto.setSearchMode(YandexSearchMode.DETAIL);
    var user = new User();
    user.setPrivileges(Set.of("CREATE_REQUEST", "CHECK_SPELLS"));
    user.setId(UUID.randomUUID());

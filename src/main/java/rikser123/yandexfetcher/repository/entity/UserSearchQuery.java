@@ -21,6 +21,7 @@ import jakarta.persistence.OrderBy;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import rikser123.yandexfetcher.dto.request.YandexQueryDto;
+import rikser123.yandexfetcher.dto.request.YandexSearchMode;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -51,8 +52,9 @@ public class UserSearchQuery {
   @Enumerated(EnumType.STRING)
   private FamilyMode familyMode;
 
-  @Column(name = "groups_on_page", length = 20)
-  private String groupsOnPage;
+  @Column(name = "search_mode", length = 50)
+  @Enumerated(EnumType.STRING)
+  private YandexSearchMode searchMode;
 
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)

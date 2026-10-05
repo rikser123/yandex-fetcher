@@ -41,8 +41,8 @@ public class YandexQueryListSpec implements Specification<UserSearchQuery> {
       predicates.add(cb.equal(root.get("familyMode"), filter.getFamilyMode()));
     }
 
-    if (!Objects.isNull(filter.getGroupsOnPage())) {
-      predicates.add(cb.equal(root.get("groupsOnPage"), filter.getGroupsOnPage()));
+    if (!Objects.isNull(filter.getSearchMode())) {
+      predicates.add(cb.equal(root.get("searchMode"), filter.getSearchMode()));
     }
 
     if (!Objects.isNull(filter.getDateFrom()) && !Objects.isNull(filter.getDateTo())) {

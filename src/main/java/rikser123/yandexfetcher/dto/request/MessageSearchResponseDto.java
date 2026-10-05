@@ -16,6 +16,7 @@ public class MessageSearchResponseDto {
   private List<SearchResponse> searchResponses = new ArrayList<>();
   private UUID userId;
   private String queryText;
+  private YandexSearchMode searchMode;
 
   @Data
   @AllArgsConstructor
