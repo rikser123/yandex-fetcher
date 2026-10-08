@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+@NamedEntityGraph(
+  name = "responses",
+  attributeNodes = { @NamedAttributeNode("responses")}
+)
 @Entity
 @Table(name = "user_search_query")
 @AllArgsConstructor

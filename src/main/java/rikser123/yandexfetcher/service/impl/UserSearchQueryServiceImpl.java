@@ -23,12 +23,14 @@ import rikser123.yandexfetcher.repository.UserQueryErrorRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
+import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
 import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 import rikser123.yandexfetcher.repository.spec.YandexQueryListSpec;
 import rikser123.yandexfetcher.service.UserSearchQueryService;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -128,5 +130,32 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   @Override
   public Optional<UserSearchQuery> findWithAnalysis(String queryText) {
     return userSearchQueryRepository.findByQueryTextAndStatus(queryText, UserSearchQueryStatus.PROCESSED, QueryAnalysisStatus.CREATED);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public List<UserSearchQuery> findPendingQueries(Instant time) {
+    return userSearchQueryRepository.findByStatusAndCreatedIsGreaterThan(UserSearchQueryStatus.IN_PROCESSING, time);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public List<UserSearchQuery> findFailedPendingQueries(Instant time) {
+    return userSearchQueryRepository.findByStatusAndCreatedIsGreaterThan(UserSearchQueryStatus.IN_PROCESSING_RETRY, time);
+  }
+
+  @Transactional
+  @Override
+  public UserSearchQuery setFailed(UserSearchQuery searchQuery) {
+    changeStatus(searchQuery, UserSearchQueryStatus.FAILED);
+    searchQuery.getResponses().forEach(response -> {
+      response.setStatus(SearchResponseStatus.FAILED);
+    });
+    var error = new UserQueryError();
+    error.setUserSearchQuery(searchQuery);
+    error.setMessage("Не удалось получить анализ по запросу пользователя");
+    userQueryErrorRepository.save(error);
+
+    return save(searchQuery);
   }
 }

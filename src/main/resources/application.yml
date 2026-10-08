@@ -83,6 +83,8 @@ schedulers:
     delay: PT10S
   analysis:
     delay: PT1M
+  pending-queries:
+    delay: PT1M
 
 logbook:
   predicate:

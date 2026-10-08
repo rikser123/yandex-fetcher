@@ -17,7 +17,11 @@ public class StatusMatrixConfig {
   public StatusMatrix<UserSearchQueryStatus> userQueryStatusMartrix() {
     var statusMatrix = new StatusMatrixImpl<UserSearchQueryStatus>();
     statusMatrix.addTransition(UserSearchQueryStatus.CREATED, EnumSet.of(UserSearchQueryStatus.IN_PROCESSING, UserSearchQueryStatus.FAILED));
-    statusMatrix.addTransition(UserSearchQueryStatus.IN_PROCESSING, EnumSet.of(UserSearchQueryStatus.PROCESSED, UserSearchQueryStatus.FAILED));
+    statusMatrix.addTransition(UserSearchQueryStatus.IN_PROCESSING,
+      EnumSet.of(UserSearchQueryStatus.PROCESSED, UserSearchQueryStatus.FAILED, UserSearchQueryStatus.IN_PROCESSING_RETRY)
+    );
+    statusMatrix.addTransition(UserSearchQueryStatus.IN_PROCESSING_RETRY, EnumSet.of(UserSearchQueryStatus.PROCESSED, UserSearchQueryStatus.FAILED));
+
 
     return statusMatrix;
   }

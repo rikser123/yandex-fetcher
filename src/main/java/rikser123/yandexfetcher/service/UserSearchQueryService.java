@@ -10,6 +10,7 @@ import rikser123.yandexfetcher.repository.entity.UserQueryError;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.UserSearchQueryStatus;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -99,4 +100,28 @@ public interface UserSearchQueryService {
    * @return Список запросов пользователя в яндекс
    */
   Optional<UserSearchQuery> findWithAnalysis(String queryText);
+
+  /**
+   * Найти зависишие запросы по времени
+   *
+   * @param time    Время зависания
+   * @return Список запросов пользователя в яндекс
+   */
+  List<UserSearchQuery> findPendingQueries(Instant time);
+
+  /**
+   * Найти упавшие повторные запросы
+   *
+   * @param time    Время зависания
+   * @return Список запросов пользователя в яндекс
+   */
+  List<UserSearchQuery> findFailedPendingQueries(Instant time);
+
+  /**
+   * Переводит запрос пользователя в ошибку
+   *
+   * @param searchQuery    Запрос пользователя
+   * @return Упавший запрос пользователя
+   */
+  UserSearchQuery setFailed(UserSearchQuery searchQuery);
 }

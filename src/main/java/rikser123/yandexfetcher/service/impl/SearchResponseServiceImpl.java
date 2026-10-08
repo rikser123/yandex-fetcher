@@ -7,15 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rikser123.bundle.exception.StatusChangeException;
-import rikser123.bundle.repository.entity.OutboxMessageStatus;
 import rikser123.bundle.service.StatusMatrix;
-import rikser123.yandexfetcher.dto.request.MessageSearchResponseDto;
 import rikser123.yandexfetcher.dto.response.YandexResponseXMLData;
 import rikser123.yandexfetcher.mapper.SearchResponseMapper;
 import rikser123.yandexfetcher.repository.SearchResponseErrorRepository;
 import rikser123.yandexfetcher.repository.SearchResponseRepository;
 import rikser123.yandexfetcher.repository.entity.SearchResponse;
-import rikser123.yandexfetcher.repository.entity.SearchResponseMessage;
 import rikser123.yandexfetcher.repository.entity.UserSearchQuery;
 import rikser123.yandexfetcher.repository.entity.SearchResponseError;
 import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
@@ -73,26 +70,7 @@ public class SearchResponseServiceImpl implements SearchResponseService {
     var uniqResults = getOnlyUniqueResults(results);
 
     var savedResults = searchResponseRepository.saveAll(uniqResults);
-    var kafkaDto = new MessageSearchResponseDto();
-    kafkaDto.setSearchQueryId(userSearchQuery.getId());
-    kafkaDto.setUserId(userSearchQuery.getUserId());
-    kafkaDto.setQueryText(userSearchQuery.getQueryText());
-    kafkaDto.setSearchMode(userSearchQuery.getSearchMode());
-
-    savedResults.forEach(searchResponse -> {
-      var kafkaDtoResponse = new MessageSearchResponseDto.SearchResponse();
-      kafkaDtoResponse.setDomain(searchResponse.getDomain());
-      kafkaDtoResponse.setSearchResponseId(searchResponse.getId());
-      kafkaDtoResponse.setUrl(searchResponse.getUrl());
-      kafkaDtoResponse.setPassages(searchResponse.getPassages());
-      kafkaDto.getSearchResponses().add(kafkaDtoResponse);
-    });
-
-    var kafkaRequestMessage = new SearchResponseMessage();
-    kafkaRequestMessage.setDto(kafkaDto);
-    kafkaRequestMessage.setStatus(OutboxMessageStatus.CREATED);
-    searchResponseMessageService.save(kafkaRequestMessage);
-
+    searchResponseMessageService.createSearchResponseMessage(userSearchQuery, savedResults);
     return savedResults;
   }
 
