@@ -21,7 +21,6 @@ import rikser123.yandexfetcher.dto.response.UserSearchQueryDto;
 import rikser123.yandexfetcher.mapper.UserSearchQueryMapper;
 import rikser123.yandexfetcher.repository.UserQueryErrorRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
-import rikser123.yandexfetcher.repository.entity.FamilyMode;
 import rikser123.yandexfetcher.repository.entity.QueryAnalysisStatus;
 import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
 import rikser123.yandexfetcher.repository.entity.UserQueryError;
@@ -32,7 +31,6 @@ import rikser123.yandexfetcher.service.UserSearchQueryService;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,10 +74,8 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   public UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto, YandexQueryDto userRequest, UserSearchQueryStatus status) {
     var user = (User) userDetailService.getCurrentUser();
 
-    var request = new UserSearchQuery();
-    request.setFamilyMode(Objects.isNull(dto.getFamilyMode()) ? FamilyMode.FAMILY_MODE_MODERATE : dto.getFamilyMode());
-    request.setSearchMode(dto.getSearchMode());
-    request.setQueryText(dto.getQueryText());
+    var request = requestMapper.mapToEntity(dto);
+
     request.setUserId(user.getId());
     request.setStatus(status);
     request.setUserRequest(userRequest);

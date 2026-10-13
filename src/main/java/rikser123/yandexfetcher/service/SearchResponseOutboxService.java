@@ -27,6 +27,7 @@ public class SearchResponseOutboxService extends OutboxMessageService<SearchResp
     kafkaDto.setUserId(userSearchQuery.getUserId());
     kafkaDto.setQueryText(userSearchQuery.getQueryText());
     kafkaDto.setSearchMode(userSearchQuery.getSearchMode());
+    kafkaDto.setCustomPromptId(userSearchQuery.getCustomPromptId());
 
     responses.forEach(searchResponse -> {
       var kafkaDtoResponse = new MessageSearchResponseDto.SearchResponse();

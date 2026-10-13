@@ -66,6 +66,9 @@ public class UserSearchQuery {
   @Enumerated(EnumType.STRING)
   private UserSearchQueryStatus status;
 
+  @Column(name = "custom_prompt_id")
+  private UUID customPromptId;
+
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(columnDefinition = "jsonb", name = "user_request", nullable = false)
   private YandexQueryDto userRequest;

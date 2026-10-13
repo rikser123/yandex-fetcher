@@ -6,6 +6,7 @@ CREATE TABLE user_search_query (
      search_mode VARCHAR(50),
      status VARCHAR(40),
      user_request JSONB NOT NULL,
+     custom_prompt_id UUID,
      updated TIMESTAMP WITH TIME ZONE,
      created TIMESTAMP WITH TIME ZONE NOT NULL
 );

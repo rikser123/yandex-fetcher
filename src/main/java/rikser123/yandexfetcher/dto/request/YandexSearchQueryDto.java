@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import rikser123.bundle.validation.CheckSqlInjection;
 import rikser123.yandexfetcher.repository.entity.FamilyMode;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,4 +38,7 @@ public class YandexSearchQueryDto {
 
   @Schema(description = "Период запроса")
   private YandexQueryDto.Period period;
+
+  @Schema(description = "Id кастомного промта пользователя")
+  private UUID customPromptId;
 }

@@ -17,6 +17,7 @@ public class MessageSearchResponseDto {
   private UUID userId;
   private String queryText;
   private YandexSearchMode searchMode;
+  private UUID customPromptId;
 
   @Data
   @AllArgsConstructor
