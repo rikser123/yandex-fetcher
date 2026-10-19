@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import rikser123.bundle.dto.User;
 import rikser123.bundle.dto.response.RikserResponseItem;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.bundle.utils.RikserResponseUtils;
@@ -122,7 +121,7 @@ public class YandexServiceImpl implements YandexSearchService {
     YandexSearchQueryDto searchDto,
     HttpServletRequest servletRequest
   ) {
-    var currentUser = (User) userDetailService.getCurrentUser();
+    var currentUser = userDetailService.getCurrentUser();
     var userTarifInfo = securityService.getUserTarif(currentUser.getId());
 
     searchDto.setQueryText(searchDto.getQueryText().strip());

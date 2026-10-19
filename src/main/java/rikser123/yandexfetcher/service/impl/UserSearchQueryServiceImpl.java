@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rikser123.bundle.dto.User;
 import rikser123.bundle.exception.StatusChangeException;
 import rikser123.bundle.service.StatusMatrix;
 import rikser123.bundle.service.UserDetailService;
@@ -51,7 +50,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
 
   @Override
   public Page<UserSearchQueryDto> findAll(YandexQueryListDto filter) {
-    var currentUser = (User) userDetailService.getCurrentUser();
+    var currentUser = userDetailService.getCurrentUser();
 
     var filterCriteria = new YandexQueryListSpec(filter, currentUser.getId());
     var pageRequest = PageRequest.of(
@@ -72,7 +71,7 @@ public class UserSearchQueryServiceImpl implements UserSearchQueryService {
   }
 
   public UserSearchQuery saveByYandexRequest(YandexSearchQueryDto dto, YandexQueryDto userRequest, UserSearchQueryStatus status) {
-    var user = (User) userDetailService.getCurrentUser();
+    var user = userDetailService.getCurrentUser();
 
     var request = requestMapper.mapToEntity(dto);
 
