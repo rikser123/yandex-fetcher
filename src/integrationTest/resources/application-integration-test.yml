@@ -58,4 +58,4 @@ schedulers:
   analysis:
     delay: PT1M
   pending-queries:
-    delay: PT1M
+    delay: PT01S

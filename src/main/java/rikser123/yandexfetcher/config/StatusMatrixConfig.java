@@ -30,7 +30,8 @@ public class StatusMatrixConfig {
   public StatusMatrix<SearchResponseStatus> searchResponseStatusMatrix() {
     var statusMatrix = new StatusMatrixImpl<SearchResponseStatus>();
     statusMatrix.addTransition(SearchResponseStatus.CREATED, EnumSet.of(SearchResponseStatus.IN_PROCESSING, SearchResponseStatus.FAILED));
-    statusMatrix.addTransition(SearchResponseStatus.IN_PROCESSING, EnumSet.of(SearchResponseStatus.PROCESSED, SearchResponseStatus.FAILED));
+    statusMatrix.addTransition(SearchResponseStatus.IN_PROCESSING, EnumSet.of(SearchResponseStatus.PROCESSED, SearchResponseStatus.FAILED, SearchResponseStatus.CREATED));
+
 
     return statusMatrix;
   }

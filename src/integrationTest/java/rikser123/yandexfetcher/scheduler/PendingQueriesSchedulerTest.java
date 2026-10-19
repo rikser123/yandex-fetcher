@@ -1,6 +1,7 @@
 package rikser123.yandexfetcher.scheduler;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import rikser123.bundle.service.UserDetailService;
 import rikser123.yandexfetcher.BaseConfig;
 import rikser123.yandexfetcher.dto.request.YandexQueryDto;
+import rikser123.yandexfetcher.repository.SearchResponseRepository;
 import rikser123.yandexfetcher.repository.UserSearchQueryRepository;
 import rikser123.yandexfetcher.repository.entity.SearchResponse;
 import rikser123.yandexfetcher.repository.entity.SearchResponseStatus;
@@ -40,6 +42,16 @@ public class PendingQueriesSchedulerTest extends BaseConfig {
   @Autowired
   private EntityManager entityManager;
 
+  @Autowired
+  private SearchResponseRepository searchResponseRepository;
+
+  @BeforeEach
+  void cleanUp() {
+    userSearchQueryRepository.deleteAllInBatch();
+    searchResponseRepository.deleteAllInBatch();
+
+  }
+
   @Test
   void shouldChangePendingStatuses() {
     var processingQuery = createSearchQuery(UserSearchQueryStatus.IN_PROCESSING);
@@ -59,7 +71,6 @@ public class PendingQueriesSchedulerTest extends BaseConfig {
           .findById(pendingQuery.getId()).get().getStatus())
           .isEqualTo(UserSearchQueryStatus.FAILED);
       });
-
   }
 
   private UserSearchQuery createSearchQuery(UserSearchQueryStatus status) {

@@ -82,7 +82,7 @@ public class SearchResponseServiceImpl implements SearchResponseService {
         "ERROR: while checkStatusMovement for searchResponse: {} from: {} to: {}",
         searchResponse.getId(),
         searchResponse.getStatus(),
-        searchResponse);
+        status);
       throw new StatusChangeException();
     }
 
