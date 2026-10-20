@@ -80,5 +80,3 @@ CREATE TABLE user_query_error (
       created TIMESTAMP WITH TIME ZONE NOT NULL,
       updated TIMESTAMP WITH TIME ZONE
 );
-
-
